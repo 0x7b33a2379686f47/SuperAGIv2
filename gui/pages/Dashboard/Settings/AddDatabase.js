@@ -35,11 +35,6 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
       setActiveView(active_view);
     }
 
-    const selected_db = localStorage.getItem('selected_db_' +  String(internalId));
-    if(selected_db) {
-      setSelectedDB(selected_db);
-    }
-
     const db_name = localStorage.getItem('db_name_' +  String(internalId));
     if(db_name) {
       setDatabaseName(db_name);
@@ -204,12 +199,12 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
         </div>
         <div className={knowledgeStyles.database_wrapper}>
           {vectorDatabases?.map((item, index) => (
-            <div key={index} style={item === selectedDB ? {border:'1px solid #9B9AA1'} : {border:'1px solid rgb(39, 35, 53)'}} className={knowledgeStyles.database_container}
-                 onClick={() => setLocalStorageValue('selected_db_' + String(internalId), item, setSelectedDB)}>
+            <div key={index} style={item.name === selectedDB ? {border:'1px solid #9B9AA1'} : {border:'1px solid rgb(39, 35, 53)'}} className={knowledgeStyles.database_container}
+                 onClick={() => setLocalStorageValue('selected_db_' + String(internalId), item.name, setSelectedDB)}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'center',margin:'20px'}}>
-                <Image width={40} height={40} src={returnDatabaseIcon(item)} alt=""/>
+                <Image width={40} height={40} src={returnDatabaseIcon(item.name)} alt=""/>
               </div>
-              <div className={styles.text_block} style={{width:'100%',marginBottom:'10px',textAlign:'center'}}>{item}</div>
+              <div className={styles.text_block} style={{width:'100%',marginBottom:'10px',textAlign:'center'}}>{item.name}</div>
             </div>))}
         </div>
         <div style={{display: 'flex', justifyContent: 'flex-end',marginTop:'15px'}}>
