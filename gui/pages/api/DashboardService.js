@@ -164,7 +164,7 @@ export const fetchVectorDBList = () => {
   return api.get(`/vector_db/get/list`);
 }
 
-export const fetchVectorDBDetails = (vectorDBId) => {
+export const getVectorDBDetails = (vectorDBId) => {
   return api.get(`/vector_db/get/db/details/${vectorDBId}`);
 }
 
