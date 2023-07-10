@@ -5,7 +5,7 @@ import styles from "@/pages/Content/Agents/Agents.module.css";
 import Image from "next/image";
 import {ToastContainer, toast} from "react-toastify";
 
-export default function KnowledgeForm({internalId, knowledgeName, setKnowledgeName, knowledgeDescription, setKnowledgeDescription, selectedIndex, setSelectedIndex, collections, isEditing, setIsEditing}) {
+export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, setKnowledgeName, knowledgeDescription, setKnowledgeDescription, selectedIndex, setSelectedIndex, collections, isEditing, setIsEditing}) {
   const [addClickable, setAddClickable] = useState(true);
   const indexRef = useRef(null);
   const [indexDropdown, setIndexDropdown] = useState(false);

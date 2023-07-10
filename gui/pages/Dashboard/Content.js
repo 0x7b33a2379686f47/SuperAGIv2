@@ -10,7 +10,7 @@ import Settings from "./Settings/Settings";
 import styles from './Dashboard.module.css';
 import Image from "next/image";
 import { EventBus } from "@/utils/eventBus";
-import {getAgents, getToolKit, getLastActiveAgent, sendTwitterCreds} from "@/pages/api/DashboardService";
+import {getAgents, getToolKit, getKnowledge, getLastActiveAgent, sendTwitterCreds} from "@/pages/api/DashboardService";
 import Market from "../Content/Marketplace/Market";
 import AgentTemplatesList from '../Content/Agents/AgentTemplatesList';
 import { useRouter } from 'next/router';
@@ -26,37 +26,11 @@ export default function Content({env, selectedView, selectedProjectId, organisat
   const [selectedTab, setSelectedTab] = useState(null);
   const [agents, setAgents] = useState(null);
   const [toolkits, setToolkits] = useState(null);
+  const [knowledge, setKnowledge] = useState(null);
   const tabContainerRef = useRef(null);
   const [toolkitDetails, setToolkitDetails] = useState({});
   const [starModal, setStarModal] = useState(false);
   const router = useRouter();
-  const knowledge = [
-    {
-      id: 1, name: "knowledge name 1", developer: "developer", source: "Marketplace", contentType: 'Knowledge',
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-      internalId: createInternalId()
-    },
-    {
-      id: 2, name: "knowledge name 2", developer: "developer", source: "Marketplace", contentType: 'Knowledge',
-      description: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
-      internalId: createInternalId()
-    },
-    {
-      id: 3, name: "knowledge name 3", developer: "developer", source: "Custom", contentType: 'Knowledge',
-      description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium",
-      internalId: createInternalId()
-    },
-    {
-      id: 4, name: "knowledge name 4", developer: "developer", source: "Marketplace", contentType: 'Knowledge',
-      description: "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
-      internalId: createInternalId()
-    },
-    {
-      id: 5, name: "knowledge name 5", developer: "developer", source: "Custom", contentType: 'Knowledge',
-      description: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit",
-      internalId: createInternalId()
-    },
-  ];
   const internalIdContentTypes = ['Create_Agent', 'Toolkits', 'Add_Toolkit', 'Add_Knowledge', 'Add_Database'];
   const multipleTabContentTypes = ['Create_Agent', 'Add_Toolkit', 'Add_Knowledge', 'Add_Database'];
 
@@ -88,6 +62,20 @@ export default function Content({env, selectedView, selectedProjectId, organisat
       });
   }
 
+  function fetchKnowledge() {
+    getKnowledge()
+      .then((response) => {
+        const data = response.data || [];
+        const updatedData = data.map(item => {
+          return { ...item, contentType: "Knowledge", internalId: createInternalId() };
+        });
+        setKnowledge(updatedData);
+      })
+      .catch((error) => {
+        console.error('Error fetching knowledge:', error);
+      });
+  }
+
   const preventDefault = (e) => {
     e.stopPropagation();
   };
@@ -96,6 +84,10 @@ export default function Content({env, selectedView, selectedProjectId, organisat
     fetchAgents();
     fetchToolkits();
   }, [selectedProjectId])
+
+  useEffect(() => {
+    fetchKnowledge();
+  }, [organisationId])
 
   const closeTab = (e, index, contentType, internalId) => {
     e.stopPropagation();
@@ -310,7 +302,7 @@ export default function Content({env, selectedView, selectedProjectId, organisat
                 {selectedTab === index && <div>
                   {tab.contentType === 'Agents' && <AgentWorkspace agentId={tab.id} selectedView={selectedView}/>}
                   {tab.contentType === 'Toolkits' && <ToolkitWorkspace internalId={tab.internalId || index} toolkitDetails={toolkitDetails}/>}
-                  {tab.contentType === 'Knowledge' && <KnowledgeDetails internalId={tab.internalId || index} knowledgeDetails={tab}/>}
+                  {tab.contentType === 'Knowledge' && <KnowledgeDetails internalId={tab.internalId || index} knowledgeId={tab.id}/>}
                   {tab.contentType === 'Database' && <DatabaseDetails internalId={tab.internalId || index} databaseId={tab.id}/>}
                   {tab.contentType === 'Settings' && <Settings organisationId={organisationId} sendDatabaseData={addTab}/>}
                   {tab.contentType === 'Marketplace' && <Market env={env} selectedView={selectedView}/>}

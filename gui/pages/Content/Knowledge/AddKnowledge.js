@@ -38,6 +38,7 @@ export default function AddKnowledge({internalId}) {
       <div className="col-3"></div>
       <div className="col-6" style={{overflowY:'scroll',height:'calc(100vh - 92px)',padding:'25px 20px'}}>
         <KnowledgeForm internalId={internalId}
+                       knowledgeId={null}
                        collections={collections}
                        knowledgeName={knowledgeName}
                        setKnowledgeName={setKnowledgeName}

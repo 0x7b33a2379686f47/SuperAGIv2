@@ -183,3 +183,15 @@ export const connectPinecone = (pineconeData) => {
 export const connectQdrant = (qdrantData) => {
   return api.post(`/vector_db/connect/qdrant`, qdrantData);
 }
+
+export const getKnowledge = () => {
+  return api.get(`/knowledge/user/list`);
+}
+
+export const getKnowledgeDetails = (knowledgeId) => {
+  return api.get(`/knowledge/user/get/details/${knowledgeId}`);
+}
+
+export const  deleteKnowledge = (knowledgeId) => {
+  return api.post(`/knowledge/delete/${knowledgeId}`);
+}

@@ -1,17 +1,27 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles1 from './Knowledge.module.css'
 import {ToastContainer, toast} from "react-toastify";
 import styles from "@/pages/Content/Toolkits/Tool.module.css";
 import Image from "next/image";
 import KnowledgeForm from "@/pages/Content/Knowledge/KnowledgeForm";
+import {deleteKnowledge, getKnowledgeDetails} from "@/pages/api/DashboardService";
 
-export default function KnowledgeDetails({internalId, knowledgeDetails}) {
+export default function KnowledgeDetails({internalId, knowledgeId}) {
   const [showDescription,setShowDescription] = useState(false);
   const [dropdown,setDropdown] = useState(false);
   const [isEditing,setIsEditing] = useState(false);
-
-  const [knowledgeName, setKnowledgeName] = useState(knowledgeDetails.name || '');
-  const [knowledgeDescription, setKnowledgeDescription] = useState(knowledgeDetails.description || '');
+  const [knowledgeName, setKnowledgeName] = useState('');
+  const [knowledgeDescription, setKnowledgeDescription] = useState('');
+  const [installationType, setInstallationType] = useState('');
+  const [model, setModel] = useState('');
+  const [tokenizer, setTokenizer] = useState('');
+  const [chunkSize, setChunkSize] = useState('');
+  const [vectorDatabase, setVectorDatabase] = useState('');
+  const [knowledgeDatatype, setKnowledgeDatatype] = useState('');
+  const [textSplitters, setTextSplitters] = useState('');
+  const [chunkOverlap, setChunkOverlap] = useState('');
+  const [dimension, setDimension] = useState('');
+  const [vectorDBIndex, setVectorDBIndex] = useState('');
   const collections = [
     {
       name: 'database name • Pinecone',
@@ -22,10 +32,18 @@ export default function KnowledgeDetails({internalId, knowledgeDetails}) {
       indices: ['index name 4', 'index name 5']
     }
   ];
-  const [selectedIndex, setSelectedIndex] = useState(collections[0].indices[0]);
 
   const uninstallKnowledge = () => {
     setDropdown(false);
+
+    deleteKnowledge(knowledgeId)
+      .then((response) => {
+        toast.success("Knowledge deleted successfully", {autoClose: 1800});
+      })
+      .catch((error) => {
+        toast.error("Unable to delete knowledge", {autoClose: 1800});
+        console.error('Error deleting knowledge:', error);
+      });
   }
 
   const viewKnowledge = () => {
@@ -37,18 +55,43 @@ export default function KnowledgeDetails({internalId, knowledgeDetails}) {
     setDropdown(false);
   }
 
+  useEffect(() => {
+    if(knowledgeId) {
+      getKnowledgeDetails()
+        .then((response) => {
+          const data = response.data || [];
+          setKnowledgeName(data.name);
+          setKnowledgeDescription(data.description);
+          setInstallationType(data.installation_type);
+          setModel(data.model);
+          setTokenizer(data.tokenizer);
+          setChunkSize(data.chunk_size);
+          setVectorDatabase(data.vector_database);
+          setKnowledgeDatatype(data.knowledge_datatype);
+          setTextSplitters(data.text_splitters);
+          setChunkOverlap(data.chunk_overlap);
+          setDimension(data.dimension);
+          setVectorDBIndex(data.vector_database_index);
+        })
+        .catch((error) => {
+          console.error('Error fetching knowledge details:', error);
+        });
+    }
+  }, [internalId]);
+
   return (<>
     <div className="row">
       <div className="col-3"></div>
       <div className="col-6" style={{overflowY:'scroll',height:'calc(100vh - 92px)',padding:'25px 20px'}}>
         {isEditing ?
         <KnowledgeForm internalId={internalId}
+                       knowledgeId={knowledgeId}
                        knowledgeName={knowledgeName}
                        setKnowledgeName={setKnowledgeName}
                        knowledgeDescription={knowledgeDescription}
                        setKnowledgeDescription={setKnowledgeDescription}
-                       selectedIndex={selectedIndex}
-                       setSelectedIndex={setSelectedIndex}
+                       selectedIndex={vectorDBIndex}
+                       setSelectedIndex={setVectorDBIndex}
                        collections={collections}
                        isEditing={true}
                        setIsEditing={setIsEditing}
@@ -73,7 +116,7 @@ export default function KnowledgeDetails({internalId, knowledgeDetails}) {
                 </button>
                 {dropdown && <div onMouseEnter={() => setDropdown(true)} onMouseLeave={() => setDropdown(false)}>
                   <ul className="dropdown_container" style={{marginTop:'0',marginLeft:'-10px',width:'165px'}}>
-                    {knowledgeDetails.source === 'Marketplace' ?
+                    {installationType === 'Marketplace' ?
                       <li className="dropdown_item" onClick={viewKnowledge}>View in marketplace</li> :
                       <li className="dropdown_item" onClick={editKnowledge}>Edit details</li>}
                     <li className="dropdown_item" onClick={uninstallKnowledge}>Uninstall knowledge</li>
@@ -82,67 +125,67 @@ export default function KnowledgeDetails({internalId, knowledgeDetails}) {
               </div>
             </div>
           </div>
-          {knowledgeDetails.source === 'Marketplace' && <div className={styles1.knowledge_wrapper} style={{width:'100%'}}>
+          {installationType === 'Marketplace' && <div className={styles1.knowledge_wrapper} style={{width:'100%'}}>
             <div style={{width:'50%'}}>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Installation Type</label>
-                <div className={styles1.knowledge_info}>{knowledgeDetails.source}</div>
+                <div className={styles1.knowledge_info}>{installationType}</div>
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Model</label>
-                <div className={styles1.knowledge_info}>text-embedding-ada-002</div>
+                <div className={styles1.knowledge_info}>{model}</div>
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Tokenizer</label>
-                <div className={styles1.knowledge_info}>Tiktoken</div>
+                <div className={styles1.knowledge_info}>{tokenizer}</div>
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Chunk Size</label>
-                <div className={styles1.knowledge_info}>256</div>
+                <div className={styles1.knowledge_info}>{chunkSize}</div>
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Vector Database</label>
-                <div className={styles1.knowledge_info}>database name • Pinecone</div>
+                <div className={styles1.knowledge_info}>{vectorDatabase}</div>
               </div>
             </div>
             <div style={{width:'50%'}}>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Knowledge datatype</label>
-                <div className={styles1.knowledge_info}>Text</div>
+                <div className={styles1.knowledge_info}>{knowledgeDatatype}</div>
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Text splitters</label>
-                <div className={styles1.knowledge_info}>Fixed size</div>
+                <div className={styles1.knowledge_info}>{textSplitters}</div>
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Chunk overlap</label>
-                <div className={styles1.knowledge_info}>20</div>
+                <div className={styles1.knowledge_info}>{chunkOverlap}</div>
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Dimension</label>
-                <div className={styles1.knowledge_info}>1536</div>
+                <div className={styles1.knowledge_info}>{dimension}</div>
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Vector database index</label>
-                <div className={styles1.knowledge_info}>index name</div>
+                <div className={styles1.knowledge_info}>{vectorDBIndex}</div>
               </div>
             </div>
           </div>}
-          {knowledgeDetails.source === 'Custom' && <div className={styles1.knowledge_wrapper}>
+          {installationType === 'Custom' && <div className={styles1.knowledge_wrapper}>
             <div style={{width:'50%'}}>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Installation Type</label>
-                <div className={styles1.knowledge_info}>{knowledgeDetails.source}</div>
+                <div className={styles1.knowledge_info}>{installationType}</div>
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Vector database index</label>
-                <div className={styles1.knowledge_info}>{selectedIndex}</div>
+                <div className={styles1.knowledge_info}>{vectorDBIndex}</div>
               </div>
             </div>
             <div style={{width:'50%'}}>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Vector Database</label>
-                <div className={styles1.knowledge_info}>database name • Pinecone</div>
+                <div className={styles1.knowledge_info}>{vectorDatabase}</div>
               </div>
             </div>
           </div>}

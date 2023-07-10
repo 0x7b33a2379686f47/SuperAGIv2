@@ -75,7 +75,7 @@ export default function DatabaseDetails({internalId, databaseId}) {
       })
       .catch((error) => {
         toast.error("Unable to delete database", {autoClose: 1800});
-        console.error('Error fetching knowledge templates:', error);
+        console.error('Error deleting database:', error);
       });
   }
 
