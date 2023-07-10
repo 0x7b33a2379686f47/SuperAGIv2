@@ -39,15 +39,9 @@ class Vectordb(DBBaseModel):
 
 
     @classmethod
-    def fetch_marketplace_list(cls):
-        headers = {'Content-Type': 'application/json'}
-        response = requests.get(
-            marketplace_url + f"/vectordb/marketplace/list",
-            headers=headers, timeout=10)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return []
+    def fetch_marketplace_list(cls, session, organisation_id):
+        vector_dbs = session.query(Vectordb).filter(Vectordb.organisation_id == organisation_id).all()
+        return vector_dbs
     
     @classmethod
     def add_database(session, name, db_type, organisation):
@@ -73,3 +67,8 @@ class Vectordb(DBBaseModel):
     def delete_vector_db(session, vector_db_id):
         session.query(Vectordb).filter(Vectordb.id == vector_db_id).delete()
         session.commit()
+    
+    @classmethod
+    def get_vector_db_from_id(session, id):
+        vector_db = session.query(Vectordb).filter(Vectordb.id == id).first()
+        return vector_db
