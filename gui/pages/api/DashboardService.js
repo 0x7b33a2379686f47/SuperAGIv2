@@ -164,6 +164,10 @@ export const fetchVectorDBList = () => {
   return api.get(`/vector_db/get/list`);
 }
 
+export const getVectorDatabases = () => {
+  return api.get(`/vector_db/user/list`);
+}
+
 export const getVectorDBDetails = (vectorDBId) => {
   return api.get(`/vector_db/get/db/details/${vectorDBId}`);
 }

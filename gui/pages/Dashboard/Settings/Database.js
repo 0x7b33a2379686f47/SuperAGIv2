@@ -6,15 +6,9 @@ import {createInternalId, loadingTextEffect} from "@/utils/utils";
 import styles from "@/pages/Content/Marketplace/Market.module.css";
 import knowledgeStyles from "@/pages/Content/Knowledge/Knowledge.module.css";
 import Image from "next/image";
-import {deleteVectorDB} from "@/pages/api/DashboardService";
+import {deleteVectorDB, getVectorDatabases} from "@/pages/api/DashboardService";
 
-export default function Database({organisationId, sendDatabaseData}) {
-  const databases = [
-    {id: 1, name: 'database name 1', database: 'Pinecone', date_added: '1yr ago'},
-    {id: 2, name: 'database name 2', database: 'Qdrant', date_added: '1yr ago'},
-    {id: 3, name: 'database name 3', database: 'Pinecone', date_added: '1yr ago'},
-    {id: 4, name: 'database name 4', database: 'Qdrant', date_added: '1yr ago'}
-  ]
+export default function Database({sendDatabaseData}) {
   const [vectorDB, setVectorDB] = useState([]);
   const [isLoading, setIsLoading] = useState(true)
   const [loadingText, setLoadingText] = useState("Loading Databases");
@@ -28,9 +22,16 @@ export default function Database({organisationId, sendDatabaseData}) {
 
   useEffect(() => {
     loadingTextEffect('Loading Databases', setLoadingText, 500);
-    setTimeout(() => {
-      loadDatabases();
-    }, 1000);
+
+    getVectorDatabases()
+      .then((response) => {
+        const data = response.data || [];
+        setVectorDB(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching vector databases:', error);
+      });
   }, []);
 
   useEffect(() => {
@@ -43,11 +44,6 @@ export default function Database({organisationId, sendDatabaseData}) {
       newDropdown[index] = state;
       return newDropdown;
     });
-  }
-
-  const loadDatabases = () => {
-    setIsLoading(false);
-    setVectorDB(databases);
   }
 
   const openDeleteModal = (index) => {
