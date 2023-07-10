@@ -4,6 +4,7 @@ import styles from './Market.module.css';
 import {EventBus} from "@/utils/eventBus";
 import {loadingTextEffect} from "@/utils/utils";
 import axios from 'axios';
+import {fetchKnowledgeTemplateList} from "@/pages/api/DashboardService";
 
 export default function MarketKnowledge() {
   const templates = [
@@ -43,16 +44,17 @@ export default function MarketKnowledge() {
     if(window.location.href.toLowerCase().includes('marketplace')) {
       setShowMarketplace(true);
     } else {
-      setTimeout(() => {
-        loadTemplates();
-      }, 1000);
+      fetchKnowledgeTemplateList()
+        .then((response) => {
+          const data = response.data || [];
+          setKnowledgeTemplates(data);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching knowledge templates:', error);
+        });
     }
   }, []);
-
-  const loadTemplates = () => {
-    setIsLoading(false);
-    setKnowledgeTemplates(templates);
-  }
 
   function handleTemplateClick(item) {
     const contentType = 'knowledge_template';

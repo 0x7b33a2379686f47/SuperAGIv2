@@ -144,6 +144,14 @@ export const fetchToolTemplateList = () => {
   return api.get(`/toolkits/get/list?page=0`);
 }
 
+export const fetchKnowledgeTemplateList = () => {
+  return api.get(`/knowledge/get/list?page=0`);
+}
+
+export const fetchVectorDBList = () => {
+  return api.get(`/vector_db/get/list?page=0`);
+}
+
 export const fetchToolTemplateOverview = (toolTemplateName) => {
   return api.get(`/toolkits/marketplace/readme/${toolTemplateName}`);
 }

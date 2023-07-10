@@ -3,7 +3,6 @@ import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import agentStyles from "@/pages/Content/Agents/Agents.module.css";
 import {
-  createInternalId,
   removeTab,
   returnDatabaseIcon,
   setLocalStorageArray,
@@ -13,11 +12,12 @@ import knowledgeStyles from "@/pages/Content/Knowledge/Knowledge.module.css";
 import styles from "@/pages/Content/Marketplace/Market.module.css";
 import Image from "next/image";
 import styles1 from "@/pages/Content/Agents/Agents.module.css";
+import {fetchVectorDBList} from "@/pages/api/DashboardService";
 
 export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
   const [activeView, setActiveView] = useState('select_database');
-  const vectorDatabases = ["Pinecone", "Qdrant"];
-  const [selectedDB, setSelectedDB] = useState(vectorDatabases[0]);
+  const [vectorDatabases, setVectorDatabases] = useState(null);
+  const [selectedDB, setSelectedDB] = useState(null);
   const [databaseName, setDatabaseName] = useState('database name');
   const [collections, setCollections] = useState(['collection name']);
 
@@ -69,6 +69,20 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
       setQdrantPort(Number(qdrant_port));
     }
   }, []);
+
+  useEffect(() => {
+    fetchVectorDBList()
+      .then((response) => {
+        console.log(response.data);
+        const data = response.data || [];
+        setVectorDatabases(data);
+        const selected_db = localStorage.getItem('selected_db_' +  String(internalId));
+        setSelectedDB(selected_db ? selected_db : data[0] || null);
+      })
+      .catch((error) => {
+        console.error('Error fetching vector databases:', error);
+      });
+  }, [internalId]);
 
   const handleNameChange = (event) => {
     setLocalStorageValue('db_name_' +  String(internalId), event.target.value, setDatabaseName);
@@ -167,7 +181,7 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
           <div className={agentStyles.page_title}>Choose a vector database</div>
         </div>
         <div className={knowledgeStyles.database_wrapper}>
-          {vectorDatabases.map((item, index) => (
+          {vectorDatabases?.map((item, index) => (
             <div key={index} style={item === selectedDB ? {border:'1px solid #9B9AA1'} : {border:'1px solid rgb(39, 35, 53)'}} className={knowledgeStyles.database_container}
                  onClick={() => setLocalStorageValue('selected_db_' + String(internalId), item, setSelectedDB)}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'center',margin:'20px'}}>
