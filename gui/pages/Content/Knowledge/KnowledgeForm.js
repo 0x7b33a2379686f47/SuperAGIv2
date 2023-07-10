@@ -4,6 +4,7 @@ import {removeTab, setLocalStorageValue} from "@/utils/utils";
 import styles from "@/pages/Content/Agents/Agents.module.css";
 import Image from "next/image";
 import {ToastContainer, toast} from "react-toastify";
+import {addUpdateKnowledge} from "@/pages/api/DashboardService";
 
 export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, setKnowledgeName, knowledgeDescription, setKnowledgeDescription, selectedIndex, setSelectedIndex, collections, isEditing, setIsEditing}) {
   const [addClickable, setAddClickable] = useState(true);
@@ -52,6 +53,22 @@ export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, s
       return
     }
 
+    const knowledgeData = {
+      "id": "",
+      "name": knowledgeName,
+      "description": knowledgeDescription,
+      "index_id": selectedIndex.id
+    }
+
+    addUpdateKnowledge(knowledgeData)
+      .then((response) => {
+        toast.success("Knowledge added successfully", {autoClose: 1800});
+      })
+      .catch((error) => {
+        toast.error("Unable to add knowledge", {autoClose: 1800});
+        console.error('Error deleting knowledge:', error);
+      });
+
     setAddClickable(false);
   }
 
@@ -59,6 +76,22 @@ export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, s
     if (!validationCheck()) {
       return
     }
+
+    const knowledgeData = {
+      "id": knowledgeId,
+      "name": knowledgeName,
+      "description": knowledgeDescription,
+      "index_id": selectedIndex.id
+    }
+
+    addUpdateKnowledge(knowledgeData)
+      .then((response) => {
+        toast.success("Knowledge updated successfully", {autoClose: 1800});
+      })
+      .catch((error) => {
+        toast.error("Unable to update knowledge", {autoClose: 1800});
+        console.error('Error deleting knowledge:', error);
+      });
 
     setIsEditing(false);
     setAddClickable(false);

@@ -199,3 +199,7 @@ export const getKnowledgeDetails = (knowledgeId) => {
 export const  deleteKnowledge = (knowledgeId) => {
   return api.post(`/knowledge/delete/${knowledgeId}`);
 }
+
+export const  addUpdateKnowledge = (knowledgeData) => {
+  return api.post(`/knowledge/add_or_update/data`, knowledgeData);
+}
