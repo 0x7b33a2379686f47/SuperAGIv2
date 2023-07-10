@@ -22,16 +22,6 @@ export default function KnowledgeDetails({internalId, knowledgeId}) {
   const [chunkOverlap, setChunkOverlap] = useState('');
   const [dimension, setDimension] = useState('');
   const [vectorDBIndex, setVectorDBIndex] = useState('');
-  const collections = [
-    {
-      name: 'database name • Pinecone',
-      indices: ['index name 1', 'index name 2', 'index name 3']
-    },
-    {
-      name: 'database name • Qdrant',
-      indices: ['index name 4', 'index name 5']
-    }
-  ];
 
   const uninstallKnowledge = () => {
     setDropdown(false);
@@ -92,7 +82,6 @@ export default function KnowledgeDetails({internalId, knowledgeId}) {
                        setKnowledgeDescription={setKnowledgeDescription}
                        selectedIndex={vectorDBIndex}
                        setSelectedIndex={setVectorDBIndex}
-                       collections={collections}
                        isEditing={true}
                        setIsEditing={setIsEditing}
         /> :
@@ -167,7 +156,7 @@ export default function KnowledgeDetails({internalId, knowledgeId}) {
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Vector database index</label>
-                <div className={styles1.knowledge_info}>{vectorDBIndex}</div>
+                <div className={styles1.knowledge_info}>{vectorDBIndex.name}</div>
               </div>
             </div>
           </div>}
@@ -179,7 +168,7 @@ export default function KnowledgeDetails({internalId, knowledgeId}) {
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Vector database index</label>
-                <div className={styles1.knowledge_info}>{vectorDBIndex}</div>
+                <div className={styles1.knowledge_info}>{vectorDBIndex.name}</div>
               </div>
             </div>
             <div style={{width:'50%'}}>

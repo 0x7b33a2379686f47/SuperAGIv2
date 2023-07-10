@@ -102,7 +102,7 @@ export default function Database({sendDatabaseData}) {
                         <Image width={12} height={12} src="/images/stack.svg" alt="database-icon"/>
                       </div>
                       <div className={styles.history_info}>
-                        {item.database}
+                        {item.db_type}
                       </div>
                     </div>
                     <div style={{display:'flex',alignItems:'center',marginLeft:'10px'}}>
@@ -110,7 +110,7 @@ export default function Database({sendDatabaseData}) {
                         <Image width={12} height={12} src="/images/schedule.svg" alt="schedule-icon"/>
                       </div>
                       <div className={styles.history_info}>
-                        Added {item.date_added}
+                        Added {item.created_at}
                       </div>
                     </div>
                   </div>

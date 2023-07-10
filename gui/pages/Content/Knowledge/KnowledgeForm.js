@@ -1,15 +1,31 @@
 import React, {useState, useEffect, useRef} from 'react';
 import styles1 from '@/pages/Content/Knowledge/Knowledge.module.css'
-import {removeTab, setLocalStorageValue} from "@/utils/utils";
+import {removeTab, setLocalStorageValue, setLocalStorageArray} from "@/utils/utils";
 import styles from "@/pages/Content/Agents/Agents.module.css";
 import Image from "next/image";
 import {ToastContainer, toast} from "react-toastify";
-import {addUpdateKnowledge} from "@/pages/api/DashboardService";
+import {addUpdateKnowledge, getValidIndices} from "@/pages/api/DashboardService";
 
-export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, setKnowledgeName, knowledgeDescription, setKnowledgeDescription, selectedIndex, setSelectedIndex, collections, isEditing, setIsEditing}) {
+export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, setKnowledgeName, knowledgeDescription, setKnowledgeDescription, selectedIndex, setSelectedIndex, isEditing, setIsEditing}) {
   const [addClickable, setAddClickable] = useState(true);
   const indexRef = useRef(null);
   const [indexDropdown, setIndexDropdown] = useState(false);
+  const [pinconeIndices, setPineconeIndices] = useState([]);
+  const [qdrantIndices, setQdrantIndices] = useState([]);
+
+  useEffect(() => {
+    getValidIndices()
+      .then((response) => {
+        const data = response.data || [];
+        if(data) {
+          setPineconeIndices(data.pinecone);
+          setQdrantIndices(data.qdrant);
+        }
+      })
+      .catch((error) => {
+        console.error('Error deleting knowledge:', error);
+      });
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -98,7 +114,7 @@ export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, s
   }
 
   const handleIndexSelect = (index) => {
-    setLocalStorageValue("knowledge_index_" + String(internalId), index, setSelectedIndex);
+    setLocalStorageArray("knowledge_index_" + String(internalId), index, setSelectedIndex);
     setIndexDropdown(false);
   }
 
@@ -129,17 +145,23 @@ export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, s
         <label className={styles.form_label}>Collection i.e, Index</label><br/>
         <div className="dropdown_container_search" style={{width:'100%'}}>
           <div className="custom_select_container" onClick={() => setIndexDropdown(!indexDropdown)} style={{width:'100%'}}>
-            {selectedIndex}<Image width={20} height={21} src={!indexDropdown ? '/images/dropdown_down.svg' : '/images/dropdown_up.svg'} alt="expand-icon"/>
+            {selectedIndex.name}<Image width={20} height={21} src={!indexDropdown ? '/images/dropdown_down.svg' : '/images/dropdown_up.svg'} alt="expand-icon"/>
           </div>
           <div>
             {indexDropdown && <div className="custom_select_options" ref={indexRef} style={{width:'100%'}}>
               <div className={styles1.knowledge_label} style={{padding:'12px 14px',maxWidth:'100%'}}>Select an existing vector database collection/index to install the knowledge</div>
-              {collections.map((collection, index) => (<div key={index} className={styles1.knowledge_db} style={{maxWidth:'100%'}}>
-                <div className={styles1.knowledge_db_name}>{collection.name}</div>
-                {collection.indices.map((item, index) => (<div key={index} className="custom_select_option" onClick={() => handleIndexSelect(item)} style={{padding:'12px 14px',maxWidth:'100%'}}>
-                  {item}
+              <div className={styles1.knowledge_db} style={{maxWidth:'100%'}}>
+                <div className={styles1.knowledge_db_name}>Pinecone</div>
+                {pinconeIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleIndexSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                  {index.name}
                 </div>))}
-              </div>))}
+              </div>
+              <div className={styles1.knowledge_db} style={{maxWidth:'100%'}}>
+                <div className={styles1.knowledge_db_name}>Qdrant</div>
+                {qdrantIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleIndexSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                  {index.name}
+                </div>))}
+              </div>
             </div>}
           </div>
         </div>

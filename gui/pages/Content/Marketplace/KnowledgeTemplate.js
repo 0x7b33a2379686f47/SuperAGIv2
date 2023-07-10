@@ -26,7 +26,6 @@ export default function KnowledgeTemplate({template, env}) {
       indices: ['index name 4', 'index name 5']
     }
   ];
-  const [selectedIndex, setSelectedIndex] = useState(collections[0].indices[0]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -82,7 +81,7 @@ export default function KnowledgeTemplate({template, env}) {
               {!template?.is_installed && <div className="dropdown_container_search" style={{width:'100%'}}>
                 <div className="primary_button" onClick={() => setIndexDropdown(!indexDropdown)}
                      style={{marginTop:'15px',cursor: 'pointer',width:'100%'}}>
-                  <Image width={14} height={14} src="/images/upload_icon_dark.svg" alt="upload-icon"/>&nbsp;Install
+                  <Image width={14} height={14} src="/images/upload_icon_dark.svg" alt="upload-icon"/>&nbsp;{installed}
                 </div>
                 <div>
                   {indexDropdown && <div className="custom_select_options" ref={indexRef} style={{width:'100%',maxHeight:'500px'}}>
@@ -99,7 +98,7 @@ export default function KnowledgeTemplate({template, env}) {
 
               {template?.is_installed && <div style={{width:'100%',display:'flex',justifyContent:'flex-start',marginTop:'15px'}}>
                 <div className="secondary_button" style={{cursor: 'default',width:'85%'}}>
-                  <Image width={14} height={14} src="/images/tick.svg" alt="tick-icon"/>&nbsp;Installed
+                  <Image width={14} height={14} src="/images/tick.svg" alt="tick-icon"/>&nbsp;{installed}
                 </div>
                 <div style={{width:'5%',marginLeft:'10px'}}>
                   <button className="secondary_button" style={{padding:'8px',height:'31px'}} onMouseEnter={() => setDropdown(true)} onMouseLeave={() => setDropdown(false)}>
@@ -126,7 +125,7 @@ export default function KnowledgeTemplate({template, env}) {
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Knowledge datatype</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{template?.datatype}</div>
+                <div className={styles1.tool_text}>{template?.knowledge_datatype}</div>
               </div><br />
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Tokenizer</span>
@@ -146,7 +145,7 @@ export default function KnowledgeTemplate({template, env}) {
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Text splitter</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{template?.text_splitter}</div>
+                <div className={styles1.tool_text}>{template?.text_splitters}</div>
               </div><br />
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Dimensions</span>
