@@ -311,7 +311,7 @@ export default function Content({env, selectedView, selectedProjectId, organisat
                   {tab.contentType === 'Agents' && <AgentWorkspace agentId={tab.id} selectedView={selectedView}/>}
                   {tab.contentType === 'Toolkits' && <ToolkitWorkspace internalId={tab.internalId || index} toolkitDetails={toolkitDetails}/>}
                   {tab.contentType === 'Knowledge' && <KnowledgeDetails internalId={tab.internalId || index} knowledgeDetails={tab}/>}
-                  {tab.contentType === 'Database' && <DatabaseDetails internalId={tab.internalId || index} databaseDetails={tab}/>}
+                  {tab.contentType === 'Database' && <DatabaseDetails internalId={tab.internalId || index} databaseId={tab.id}/>}
                   {tab.contentType === 'Settings' && <Settings organisationId={organisationId} sendDatabaseData={addTab}/>}
                   {tab.contentType === 'Marketplace' && <Market env={env} selectedView={selectedView}/>}
                   {tab.contentType === 'Add_Toolkit' && <AddTool internalId={tab.internalId || index}/>}

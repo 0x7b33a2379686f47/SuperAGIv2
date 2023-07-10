@@ -148,10 +148,6 @@ export const fetchKnowledgeTemplateList = () => {
   return api.get(`/knowledge/get/list?page=0`);
 }
 
-export const fetchVectorDBList = () => {
-  return api.get(`/vector_db/get/list?page=0`);
-}
-
 export const fetchToolTemplateOverview = (toolTemplateName) => {
   return api.get(`/toolkits/marketplace/readme/${toolTemplateName}`);
 }
@@ -162,4 +158,28 @@ export const installToolkitTemplate = (templateName) => {
 
 export const getExecutionDetails = (executionId) => {
   return api.get(`/agent_executions_configs/details/${executionId}`);
+}
+
+export const fetchVectorDBList = () => {
+  return api.get(`/vector_db/get/list`);
+}
+
+export const fetchVectorDBDetails = (vectorDBId) => {
+  return api.get(`/vector_db/get/db/details/${vectorDBId}`);
+}
+
+export const  deleteVectorDB = (vectorDBId) => {
+  return api.post(`/vector_db/delete/${vectorDBId}`);
+}
+
+export const  updateVectorDB = (vectorDBId, newIndices) => {
+  return api.put(`/vector_db/update/vector_db/${vectorDBId}`, newIndices);
+}
+
+export const connectPinecone = (pineconeData) => {
+  return api.post(`/vector_db/connect/pinecone`, pineconeData);
+}
+
+export const connectQdrant = (qdrantData) => {
+  return api.post(`/vector_db/connect/qdrant`, qdrantData);
 }

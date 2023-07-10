@@ -6,10 +6,11 @@ import {createInternalId, loadingTextEffect} from "@/utils/utils";
 import styles from "@/pages/Content/Marketplace/Market.module.css";
 import knowledgeStyles from "@/pages/Content/Knowledge/Knowledge.module.css";
 import Image from "next/image";
+import {deleteVectorDB} from "@/pages/api/DashboardService";
 
 export default function Database({organisationId, sendDatabaseData}) {
   const databases = [
-    {id: 0, name: 'database name 1', database: 'Pinecone', date_added: '1yr ago'},
+    {id: 1, name: 'database name 1', database: 'Pinecone', date_added: '1yr ago'},
     {id: 2, name: 'database name 2', database: 'Qdrant', date_added: '1yr ago'},
     {id: 3, name: 'database name 3', database: 'Pinecone', date_added: '1yr ago'},
     {id: 4, name: 'database name 4', database: 'Qdrant', date_added: '1yr ago'}
@@ -57,6 +58,15 @@ export default function Database({organisationId, sendDatabaseData}) {
 
   const deleteDatabase = (databaseId) => {
     setDeleteModal(false);
+
+    deleteVectorDB(databaseId)
+      .then((response) => {
+        toast.success("Database deleted successfully", {autoClose: 1800});
+      })
+      .catch((error) => {
+        toast.error("Unable to delete database", {autoClose: 1800});
+        console.error('Error fetching knowledge templates:', error);
+      });
   }
 
   return (<>

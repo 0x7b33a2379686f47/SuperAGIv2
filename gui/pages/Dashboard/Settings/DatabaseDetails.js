@@ -6,8 +6,9 @@ import {returnDatabaseIcon, setLocalStorageArray} from "@/utils/utils";
 import knowledgeStyles from "@/pages/Content/Knowledge/Knowledge.module.css";
 import styles from "@/pages/Content/Marketplace/Market.module.css";
 import Image from "next/image";
+import {deleteVectorDB, updateVectorDB} from "@/pages/api/DashboardService";
 
-export default function DatabaseDetails({internalId, databaseDetails}) {
+export default function DatabaseDetails({internalId, databaseId}) {
   const [dropdown,setDropdown] = useState(false);
   const [deleteModal,setDeleteModal] = useState(false);
   const [selectedDB, setSelectedDB] = useState('');
@@ -67,6 +68,15 @@ export default function DatabaseDetails({internalId, databaseDetails}) {
 
   const deleteDatabase = () => {
     setDeleteModal(false);
+
+    deleteVectorDB(databaseId)
+      .then((response) => {
+        toast.success("Database deleted successfully", {autoClose: 1800});
+      })
+      .catch((error) => {
+        toast.error("Unable to delete database", {autoClose: 1800});
+        console.error('Error fetching knowledge templates:', error);
+      });
   }
 
   const revertChanges = () => {
@@ -77,6 +87,15 @@ export default function DatabaseDetails({internalId, databaseDetails}) {
   const updateChanges = () => {
     setInitialCollections(collections);
     setHasChanges(false);
+
+    updateVectorDB(databaseDetails.id, collections)
+      .then((response) => {
+        toast.success("Database updated successfully", {autoClose: 1800});
+      })
+      .catch((error) => {
+        toast.error("Unable to update database", {autoClose: 1800});
+        console.error('Error fetching knowledge templates:', error);
+      });
   };
 
   return (<>

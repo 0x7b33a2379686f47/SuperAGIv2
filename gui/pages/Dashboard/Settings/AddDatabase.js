@@ -3,6 +3,7 @@ import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import agentStyles from "@/pages/Content/Agents/Agents.module.css";
 import {
+  createInternalId,
   removeTab,
   returnDatabaseIcon,
   setLocalStorageArray,
@@ -12,7 +13,7 @@ import knowledgeStyles from "@/pages/Content/Knowledge/Knowledge.module.css";
 import styles from "@/pages/Content/Marketplace/Market.module.css";
 import Image from "next/image";
 import styles1 from "@/pages/Content/Agents/Agents.module.css";
-import {fetchVectorDBList} from "@/pages/api/DashboardService";
+import {connectPinecone, connectQdrant, fetchVectorDBList} from "@/pages/api/DashboardService";
 
 export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
   const [activeView, setActiveView] = useState('select_database');
@@ -73,11 +74,10 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
   useEffect(() => {
     fetchVectorDBList()
       .then((response) => {
-        console.log(response.data);
         const data = response.data || [];
         setVectorDatabases(data);
         const selected_db = localStorage.getItem('selected_db_' +  String(internalId));
-        setSelectedDB(selected_db ? selected_db : data[0] || null);
+        setSelectedDB(selected_db ? selected_db : data[0].name || null);
       })
       .catch((error) => {
         console.error('Error fetching vector databases:', error);
@@ -140,6 +140,23 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
         toast.error("Pinecone environment is empty", {autoClose: 1800});
         return;
       }
+
+      const pineconeData = {
+        "name": databaseName,
+        "collections": collections,
+        "api_key": pineconeApiKey,
+        "environment": pineconeEnvironment,
+      }
+
+      connectPinecone(pineconeData)
+        .then((response) => {
+          toast.success("Database connected successfully", {autoClose: 1800});
+          sendDatabaseDetailsData({id: response.data.id, name: response.data.name, contentType: "Database", internalId: createInternalId()});
+        })
+        .catch((error) => {
+          toast.error("Unable to connect database", {autoClose: 1800});
+          console.error('Error fetching vector databases:', error);
+        });
     }
 
     if(selectedDB === 'Qdrant') {
@@ -157,20 +174,25 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
         toast.error("Qdrant port can't be blank", {autoClose: 1800});
         return;
       }
-    }
 
-    sendDatabaseDetailsData({
-      id: -8,
-      name: databaseName,
-      contentType: "Database",
-      database: selectedDB,
-      collections: collections,
-      pineconeApiKey: pineconeApiKey,
-      pineconeEnvironment: pineconeEnvironment,
-      qdrantApiKey: qdrantApiKey,
-      qdrantURL: qdrantURL,
-      qdrantPort: qdrantPort
-    })
+      const qdrantData = {
+        "name": databaseName,
+        "collections": collections,
+        "api_key": qdrantApiKey,
+        "url": qdrantURL,
+        "port": qdrantPort
+      }
+
+      connectQdrant(qdrantData)
+        .then((response) => {
+          toast.success("Database connected successfully", {autoClose: 1800});
+          sendDatabaseDetailsData({id: response.data.id, name:  response.data.name, contentType: "Database", internalId: createInternalId()});
+        })
+        .catch((error) => {
+          toast.error("Unable to connect database", {autoClose: 1800});
+          console.error('Error fetching vector databases:', error);
+        });
+    }
   }
 
   return (<>
