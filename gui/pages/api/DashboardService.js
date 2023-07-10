@@ -207,3 +207,7 @@ export const addUpdateKnowledge = (knowledgeData) => {
 export const getValidIndices = () => {
   return api.get(`/vector_db_index/get/user/valid_indices`);
 }
+
+export const getValidMarketplaceIndices = (knowledgeId) => {
+  return api.get(`/vector_db_index/get/marketplace/valid_indices/${knowledgeId}`);
+}

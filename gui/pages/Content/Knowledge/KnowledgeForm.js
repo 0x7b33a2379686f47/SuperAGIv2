@@ -23,7 +23,7 @@ export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, s
         }
       })
       .catch((error) => {
-        console.error('Error deleting knowledge:', error);
+        console.error('Error fetching indices:', error);
       });
   }, []);
 
@@ -152,13 +152,13 @@ export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, s
               <div className={styles1.knowledge_label} style={{padding:'12px 14px',maxWidth:'100%'}}>Select an existing vector database collection/index to install the knowledge</div>
               <div className={styles1.knowledge_db} style={{maxWidth:'100%'}}>
                 <div className={styles1.knowledge_db_name}>Pinecone</div>
-                {pinconeIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleIndexSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                {pinconeIndices?.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleIndexSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
                   {index.name}
                 </div>))}
               </div>
               <div className={styles1.knowledge_db} style={{maxWidth:'100%'}}>
                 <div className={styles1.knowledge_db_name}>Qdrant</div>
-                {qdrantIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleIndexSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                {qdrantIndices?.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleIndexSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
                   {index.name}
                 </div>))}
               </div>

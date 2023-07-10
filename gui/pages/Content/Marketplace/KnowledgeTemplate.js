@@ -9,6 +9,7 @@ import styles3 from "../Knowledge/Knowledge.module.css"
 import {EventBus} from "@/utils/eventBus";
 import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
+import {getValidMarketplaceIndices} from "@/pages/api/DashboardService";
 
 export default function KnowledgeTemplate({template, env}) {
   const [installed, setInstalled] = useState('');
@@ -16,16 +17,22 @@ export default function KnowledgeTemplate({template, env}) {
   const [markdownContent, setMarkdownContent] = useState('');
   const indexRef = useRef(null);
   const [indexDropdown, setIndexDropdown] = useState(false);
-  const collections = [
-    {
-      name: 'database name • Pinecone',
-      indices: ['index name 1', 'index name 2', 'index name 3']
-    },
-    {
-      name: 'database name • Qdrant',
-      indices: ['index name 4', 'index name 5']
-    }
-  ];
+  const [pinconeIndices, setPineconeIndices] = useState([]);
+  const [qdrantIndices, setQdrantIndices] = useState([]);
+
+  useEffect(() => {
+    getValidMarketplaceIndices(template.id)
+      .then((response) => {
+        const data = response.data || [];
+        if(data) {
+          setPineconeIndices(data.pinecone);
+          setQdrantIndices(data.qdrant);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching indices:', error);
+      });
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -52,7 +59,7 @@ export default function KnowledgeTemplate({template, env}) {
     }
   }, []);
 
-  const handleInstallClick = (item) => {
+  const handleInstallClick = (index) => {
 
   }
 
@@ -86,12 +93,18 @@ export default function KnowledgeTemplate({template, env}) {
                 <div>
                   {indexDropdown && <div className="custom_select_options" ref={indexRef} style={{width:'100%',maxHeight:'500px'}}>
                     <div className={styles3.knowledge_label} style={{padding:'12px 14px',maxWidth:'100%'}}>Select an existing vector database collection/index to install the knowledge</div>
-                    {collections.map((collection, index) => (<div key={index} className={styles3.knowledge_db} style={{maxWidth:'100%'}}>
-                      <div className={styles3.knowledge_db_name}>{collection.name}</div>
-                      {collection.indices.map((item, index) => (<div key={index} className="custom_select_option" onClick={() => handleInstallClick(item)} style={{padding:'12px 14px',maxWidth:'100%'}}>
-                        {item}
+                    <div className={styles3.knowledge_db} style={{maxWidth:'100%'}}>
+                      <div className={styles3.knowledge_db_name}>Pinecone</div>
+                      {pinconeIndices?.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleInstallClick(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                        {index.name}
                       </div>))}
-                    </div>))}
+                    </div>
+                    <div className={styles3.knowledge_db} style={{maxWidth:'100%'}}>
+                      <div className={styles3.knowledge_db_name}>Qdrant</div>
+                      {qdrantIndices?.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleInstallClick(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                        {index.name}
+                      </div>))}
+                    </div>
                   </div>}
                 </div>
               </div>}
