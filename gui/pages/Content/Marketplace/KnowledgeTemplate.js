@@ -122,7 +122,7 @@ export default function KnowledgeTemplate({template, env}) {
           <div className="col-3" style={{maxHeight: '84vh', overflowY: 'auto', padding: '0'}}>
             <div className={styles2.left_container}>
               <span className={styles2.top_heading}>{templateData?.name}</span>
-              <span style={{fontSize: '12px',marginTop: '15px',}} className={styles.tool_publisher}>by {templateData?.contributed_by}</span>
+              <span style={{fontSize: '12px',marginTop: '15px',}} className={styles.tool_publisher}>by {templateData?.contributed_by}&nbsp;{'\u00B7'}&nbsp;<Image width={14} height={14} src="/images/upload_icon.svg" alt="upload-icon"/>{templateData?.install_number || 0}</span>
 
               {!template?.is_installed && <div className="dropdown_container_search" style={{width:'100%'}}>
                 <div className="primary_button" onClick={() => setIndexDropdown(!indexDropdown)}
