@@ -161,7 +161,7 @@ export default function KnowledgeDetails({internalId, knowledgeId}) {
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Vector database index</label>
-                <div className={styles1.knowledge_info}>{vectorDBIndex.name}</div>
+                <div className={styles1.knowledge_info}>{vectorDBIndex?.name || ''}</div>
               </div>
             </div>
           </div>}
@@ -173,7 +173,7 @@ export default function KnowledgeDetails({internalId, knowledgeId}) {
               </div>
               <div className={styles1.knowledge_info_box}>
                 <label className={styles1.knowledge_label}>Vector database index</label>
-                <div className={styles1.knowledge_info}>{vectorDBIndex.name}</div>
+                <div className={styles1.knowledge_info}>{vectorDBIndex?.name || ''}</div>
               </div>
             </div>
             <div style={{width:'50%'}}>
