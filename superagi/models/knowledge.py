@@ -96,6 +96,7 @@ class Knowledge(DBBaseModel):
     @classmethod
     def check_if_marketplace(cls, session, user_knowledge, marketplace_organisation_id):
         marketplace_knowledge = session.query(Knowledge).filter(Knowledge.organisation_id == marketplace_organisation_id, Knowledge.name == user_knowledge["name"]).first()
+        print(marketplace_knowledge)
         if marketplace_knowledge:
             return True
         else:
