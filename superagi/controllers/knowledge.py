@@ -63,6 +63,7 @@ def get_knowledge_details(knowledge_id: int):
         "descriptiom": knowledge_data.description,
         "readme": knowledge_data.readme,
         "contributed_by": knowledge_data.contributed_by,
+        "updated_at": knowledge_data.updated_at
     }
     knowledge_with_config = KnowledgeConfig.get_knowledge_config(db.session, knowledge_id, knowledge)
     knowledge_with_config["install_number"] = MarketPlaceStats.get_knowledge_installation_number(db.session, knowledge_id)
