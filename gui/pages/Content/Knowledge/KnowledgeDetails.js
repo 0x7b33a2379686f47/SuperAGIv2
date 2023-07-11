@@ -57,10 +57,10 @@ export default function KnowledgeDetails({internalId, knowledgeId}) {
           setTokenizer(data.tokenizer);
           setChunkSize(data.chunk_size);
           setVectorDatabase(data.vector_database);
-          setKnowledgeDatatype(data.knowledge_datatype);
-          setTextSplitters(data.text_splitters);
+          setKnowledgeDatatype(data.data_type);
+          setTextSplitters(data.text_splitter);
           setChunkOverlap(data.chunk_overlap);
-          setDimension(data.dimension);
+          setDimension(data.dimensions);
           setVectorDBIndex(data.vector_database_index);
         })
         .catch((error) => {

@@ -3,7 +3,6 @@ import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import agentStyles from "@/pages/Content/Agents/Agents.module.css";
 import {
-  convertToTitleCase,
   createInternalId,
   removeTab,
   returnDatabaseIcon,
@@ -41,6 +40,11 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
       setDatabaseName(db_name);
     }
 
+    const db_collections = localStorage.getItem('db_collections_' +  String(internalId));
+    if(db_collections) {
+      setCollections(JSON.parse(db_collections));
+    }
+
     const pinecone_api = localStorage.getItem('pincone_api_' +  String(internalId));
     if(pinecone_api) {
       setPineconeApiKey(pinecone_api);
@@ -65,7 +69,7 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
     if(qdrant_port) {
       setQdrantPort(Number(qdrant_port));
     }
-  }, []);
+  }, [internalId]);
 
   useEffect(() => {
     fetchVectorDBList()
@@ -73,7 +77,7 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
         const data = response.data || [];
         setVectorDatabases(data);
         const selected_db = localStorage.getItem('selected_db_' +  String(internalId));
-        setSelectedDB(selected_db ? selected_db : convertToTitleCase(data[0].name) || '');
+        setSelectedDB(selected_db ? selected_db : data[0].name || '');
       })
       .catch((error) => {
         console.error('Error fetching vector databases:', error);
@@ -212,9 +216,9 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
             <div key={index} style={item.name === selectedDB ? {border:'1px solid #9B9AA1'} : {border:'1px solid rgb(39, 35, 53)'}} className={knowledgeStyles.database_container}
                  onClick={() => setLocalStorageValue('selected_db_' + String(internalId), item.name, setSelectedDB)}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'center',margin:'20px'}}>
-                <Image width={40} height={40} src={returnDatabaseIcon(convertToTitleCase(item.name))} alt=""/>
+                <Image width={40} height={40} src={returnDatabaseIcon(item.name)} alt=""/>
               </div>
-              <div className={styles.text_block} style={{width:'100%',marginBottom:'10px',textAlign:'center'}}>{convertToTitleCase(item.name)}</div>
+              <div className={styles.text_block} style={{width:'100%',marginBottom:'10px',textAlign:'center'}}>{item.name}</div>
             </div>))}
         </div>
         <div style={{display: 'flex', justifyContent: 'flex-end',marginTop:'15px'}}>
