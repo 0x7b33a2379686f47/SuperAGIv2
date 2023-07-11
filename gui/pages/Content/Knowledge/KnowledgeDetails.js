@@ -51,7 +51,7 @@ export default function KnowledgeDetails({internalId, knowledgeId}) {
 
   useEffect(() => {
     if(knowledgeId) {
-      getKnowledgeDetails()
+      getKnowledgeDetails(knowledgeId)
         .then((response) => {
           const data = response.data || [];
           setKnowledgeName(data.name);
