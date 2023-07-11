@@ -33,7 +33,7 @@ def handle_marketplace_operations_list():
 
 @router.post("/connect/pinecone")
 def connect_pinecone_vector_db(data: dict, organisation = Depends(get_user_organisation)):
-    pinecone_keys = ["API_KEY", "ENVIRONMENT"]
+    pinecone_keys = ["api_key", "environment"]
     for collection in data["collections"]:
         index_dimensions = PineconeHelper(db.session).get_dimensions(data["api_key"], data["environment"], collection)
         index_state = PineconeHelper(db.session).get_pinecone_index_state(data["api_key"], data["environment"], collection)
@@ -45,8 +45,8 @@ def connect_pinecone_vector_db(data: dict, organisation = Depends(get_user_organ
     for collection in data["collections"]:
         vector_index = VectorIndexCollection.add_vector_index(db.session, collection, pinecone_db.id)
         key_data = {
-            "DIMENSIONS": index_dimensions["dimensions"],
-            "INDEX_STATE": index_state["state"]
+            "dimensions": str(index_dimensions["dimensions"]),
+            "index_state": index_state["state"]
         }
         for key in key_data.keys():
            VectorIndexConfig.add_vector_index_config(db.session, vector_index.id, key, key_data[key]) 
@@ -54,7 +54,7 @@ def connect_pinecone_vector_db(data: dict, organisation = Depends(get_user_organ
 
 @router.post("/connect/qdrant")
 def connect_qdrant_vector_db(data: dict, organisation = Depends(get_user_organisation)):
-    qdrant_keys = ["API_KEY", "URL", "PORT"]
+    qdrant_keys = ["api_key", "url", "port"]
     for collection in data["collections"]:
         index_dimensions = QdrantHelper(db.session).get_dimensions(data["api_key"], data["url"], data["port"], collection)
         index_state = QdrantHelper(db.session).get_qdrant_index_state(data["api_key"], data["url"], data["port"], collection)
@@ -62,12 +62,12 @@ def connect_qdrant_vector_db(data: dict, organisation = Depends(get_user_organis
             return {"success": False}
     qdrant_db = Vectordb.add_database(db.session, data["name"], "Qdrant", organisation)
     for key in qdrant_keys:
-        VectordbConfig.add_database_config(db.session, qdrant_db.id, key, data[key.lower()])
+        VectordbConfig.add_database_config(db.session, qdrant_db.id, key, data[key])
     for collection in data["collections"]:
         vector_index = VectorIndexCollection.add_vector_index(db.session, collection, qdrant_db.id)
         key_data = {
-            "DIMENSIONS": index_dimensions["dimensions"],
-            "INDEX_STATE": index_state["state"]
+            "dimensions": str(index_dimensions["dimensions"]),
+            "index_state": index_state["state"]
         }
         for key in key_data.keys():
            VectorIndexConfig.add_vector_index_config(db.session, vector_index.id, key, key_data[key])
@@ -98,8 +98,8 @@ def update_vector_indices(new_indices: list, vector_db_id: int):
             if not index_dimensions["success"] or not index_state:
                 return {"success": False}
             key_data = {
-                "DIMENSIONS": index_dimensions["dimensions"],
-                "INDEX_STATE": index_state["state"]
+                "dimensions": str(index_dimensions["dimensions"]),
+                "index_state": index_state["state"]
             }
             for key in key_data.keys():
                 VectorIndexConfig.add_vector_index_config(db.session, vector_index.id, key, key_data[key])
