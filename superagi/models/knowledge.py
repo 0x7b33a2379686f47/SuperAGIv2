@@ -87,6 +87,7 @@ class Knowledge(DBBaseModel):
         knowledge_data = []
         for knowledge in knowledge_list:
             data = {
+                "id": knowledge.id,
                 "name": knowledge.name,
                 "contributed_by": knowledge.contributed_by
             }
