@@ -3,6 +3,7 @@ import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import agentStyles from "@/pages/Content/Agents/Agents.module.css";
 import {
+  convertToTitleCase,
   createInternalId,
   removeTab,
   returnDatabaseIcon,
@@ -72,7 +73,7 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
         const data = response.data || [];
         setVectorDatabases(data);
         const selected_db = localStorage.getItem('selected_db_' +  String(internalId));
-        setSelectedDB(selected_db ? selected_db : data[0].name || null);
+        setSelectedDB(selected_db ? selected_db : convertToTitleCase(data[0].name) || null);
       })
       .catch((error) => {
         console.error('Error fetching vector databases:', error);

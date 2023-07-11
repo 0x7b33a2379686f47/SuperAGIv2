@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import agentStyles from "@/pages/Content/Agents/Agents.module.css";
-import {returnDatabaseIcon, setLocalStorageArray} from "@/utils/utils";
+import {convertToTitleCase, returnDatabaseIcon, setLocalStorageArray} from "@/utils/utils";
 import knowledgeStyles from "@/pages/Content/Knowledge/Knowledge.module.css";
 import styles from "@/pages/Content/Marketplace/Market.module.css";
 import Image from "next/image";
@@ -111,9 +111,9 @@ export default function DatabaseDetails({internalId, databaseId}) {
         <div className="database_box">
           <div style={{display:'flex',justifyContent:'flex-start',order:'0',alignItems:'center'}}>
             <div style={{marginLeft:'15px'}}>
-              <Image src={returnDatabaseIcon(databaseDetails?.db_type)} alt="database-icon" width={40} height={40}/>
+              <Image src={returnDatabaseIcon(convertToTitleCase(databaseDetails?.db_type))} alt="database-icon" width={40} height={40}/>
             </div>
-            <div style={{marginLeft:'15px',fontSize:'14px',marginTop:'23px'}} className={agentStyles.page_title}>{databaseDetails?.db_type}</div>
+            <div style={{marginLeft:'15px',fontSize:'14px',marginTop:'23px'}} className={agentStyles.page_title}>{convertToTitleCase(databaseDetails?.db_type)}</div>
           </div>
         </div>
         <div style={{marginTop: '15px'}}>
@@ -132,7 +132,7 @@ export default function DatabaseDetails({internalId, databaseId}) {
           </div>))}
           <div><button className="secondary_button" onClick={addCollection}>+ Add</button></div>
         </div>
-        {databaseDetails?.db_type === 'Pinecone' && <div>
+        {convertToTitleCase(databaseDetails?.db_type) === 'Pinecone' && <div>
           <div style={{marginTop:'15px'}}>
             <label className={knowledgeStyles.knowledge_label}>Pinecone API key</label>
             <div className={knowledgeStyles.knowledge_info}>{databaseDetails?.api_key}</div>
@@ -142,7 +142,7 @@ export default function DatabaseDetails({internalId, databaseId}) {
             <div className={knowledgeStyles.knowledge_info}>{databaseDetails?.environment}</div>
           </div>
         </div>}
-        {databaseDetails?.db_type === 'Qdrant' && <div>
+        {convertToTitleCase(databaseDetails?.db_type) === 'Qdrant' && <div>
           <div style={{marginTop:'15px'}}>
             <label className={knowledgeStyles.knowledge_label}>Qdrant API key</label>
             <div className={knowledgeStyles.knowledge_info}>{databaseDetails?.api_key}</div>
