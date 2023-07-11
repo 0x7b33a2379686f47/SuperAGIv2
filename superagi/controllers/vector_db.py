@@ -79,30 +79,40 @@ def get_user_connected_vector_db(organisation = Depends(get_user_organisation)):
     vector_db_list = Vectordb.get_vector_db_organisation(db.session, organisation)
     return vector_db_list
 
-@router.post("/update/vector_db/{vector_db_id}")
+@router.put("/update/vector_db/{vector_db_id}")
 def update_vector_indices(new_indices: list, vector_db_id: int):
     vector_db = db.session.query(Vectordb).filter(Vectordb.id == vector_db_id).first()
     existing_index = VectorIndexCollection.get_vector_index_organisation(db.session, vector_db_id)
+    existing_index_name = []
     for index in existing_index:
         if index.name not in new_indices:
             VectorIndexConfig.delete_vector_index_config(db.session, vector_index_id=index.id)
             VectorIndexCollection.delete_vector_index(db.session, id=index.id)
-        else:
-            vector_index = VectorIndexCollection.add_vector_index(db.session, existing_index, vector_db_id)
-            if vector_db.db_type == "Pinecone":
-                index_dimensions = PineconeHelper(db.session).get_dimensions(vector_db, vector_index)
-                index_state = PineconeHelper(db.session).get_pinecone_index_state(vector_db, vector_index)
-            elif vector_db.db_type == "Qdrant":
-                index_dimensions = QdrantHelper(db.session).get_dimensions(vector_db, vector_index)
-                index_state = QdrantHelper(db.session).get_qdrant_index_state(vector_db, vector_index)
-            if not index_dimensions["success"] or not index_state:
-                return {"success": False}
-            key_data = {
-                "dimensions": str(index_dimensions["dimensions"]),
-                "index_state": index_state["state"]
-            }
-            for key in key_data.keys():
-                VectorIndexConfig.add_vector_index_config(db.session, vector_index.id, key, key_data[key])
+        existing_index_name.append(index.name)
+    existing_index_name = set(existing_index_name)
+    new_index_name = set(new_indices)
+    added_indices = new_index_name - existing_index_name
+    for index in added_indices:
+        vector_index = VectorIndexCollection.add_vector_index(db.session, index, vector_db_id)
+        if vector_db.db_type == "Pinecone":
+            api_key = db.session.query(VectordbConfig).filter(VectordbConfig.vector_db_id == vector_db.id, VectordbConfig.key == "api_key").first()
+            environment = db.session.query(VectordbConfig).filter(VectordbConfig.vector_db_id == vector_db.id, VectordbConfig.key == "environment").first()
+            index_dimensions = PineconeHelper(db.session).get_dimensions(api_key.value, environment.value, vector_index)
+            index_state = PineconeHelper(db.session).get_pinecone_index_state(api_key.value, environment.value, vector_index)
+        elif vector_db.db_type == "Qdrant":
+            api_key = db.session.query(VectordbConfig).filter(VectordbConfig.vector_db_id == vector_db.id, VectordbConfig.key == "api_key").first()
+            url = db.session.query(VectordbConfig).filter(VectordbConfig.vector_db_id == vector_db.id, VectordbConfig.key == "url").first()
+            port = db.session.query(VectordbConfig).filter(VectordbConfig.vector_db_id == vector_db.id, VectordbConfig.key == "port").first()
+            index_dimensions = QdrantHelper(db.session).get_dimensions(api_key.value, url.value, port.value, vector_index)
+            index_state = QdrantHelper(db.session).get_qdrant_index_state(api_key.value, url.value, port.value, vector_index)
+        if not index_dimensions["success"] or not index_state:
+            return {"success": False}
+        key_data = {
+            "dimensions": str(index_dimensions["dimensions"]),
+            "index_state": index_state["state"]
+        }
+        for key in key_data.keys():
+            VectorIndexConfig.add_vector_index_config(db.session, vector_index.id, key, key_data[key])
     return {"success": True}
 
 @router.get("/get/db/details/{vector_db_id}")

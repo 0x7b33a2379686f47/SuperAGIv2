@@ -105,7 +105,7 @@ class Knowledge(DBBaseModel):
         
     @classmethod
     def add_update_knowledge(cls, session, knowledge_data):
-        knowledge = session.query(Knowledge).filter(Knowledge.name == knowledge_data["id"],Knowledge.organisation_id == knowledge_data["organisation_id"]).first()
+        knowledge = session.query(Knowledge).filter(Knowledge.id == knowledge_data["id"],Knowledge.organisation_id == knowledge_data["organisation_id"]).first()
         if knowledge:
             knowledge.name = knowledge_data["name"]
             knowledge.description = knowledge_data["description"]
