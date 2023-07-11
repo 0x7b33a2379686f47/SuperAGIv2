@@ -73,7 +73,10 @@ def get_user_knowledge_details(knowledge_id: int):
     knowledge = {
         "name": knowledge_data.name,
         "description": knowledge_data.description,
-        "vector_database_index": vector_database_index.name,
+        "vector_index": {
+            "id": vector_database_index.id,
+            "name": vector_database_index.name
+        },
         "vector_database": vector_database.name
     }
     is_installed = Knowledge.check_if_marketplace(db.session, knowledge, marketplace_organisation_id)
