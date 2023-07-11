@@ -20,7 +20,7 @@ export default function Knowledge({sendKnowledgeData, knowledge}) {
           <div style={{ overflowY: 'scroll', height: '80vh' }}>
             <div className={styles.tool_container}>
               {knowledge.map((item, index) => (
-                <div key={index} className={styles.tool_box} onClick={() => sendKnowledgeData(item)}>
+                <div key={index} className={styles.tool_box} onClick={() => sendKnowledgeData({ id: item.id, name: item.name, contentType: "Knowledge", internalId: createInternalId() })}>
                   <div className="row">
                     <div className="col-12">
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', padding: '5px' }}>
