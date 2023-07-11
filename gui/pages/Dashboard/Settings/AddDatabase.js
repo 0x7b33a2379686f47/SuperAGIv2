@@ -190,6 +190,15 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
     }
   }
 
+  const proceedAddDatabase = () => {
+    if(selectedDB === null) {
+      toast.error("Please select a database", {autoClose: 1800});
+      return;
+    }
+
+    setLocalStorageValue('add_database_tab_' + String(internalId), 'form_database', setActiveView)
+  }
+
   return (<>
     <div className="row">
       <div className="col-3"></div>
@@ -211,7 +220,7 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
           <button onClick={() => removeTab(-7, "new database", "Add_Database")} className="secondary_button" style={{marginRight: '10px'}}>
             Cancel
           </button>
-          <button className="primary_button" onClick={() => setLocalStorageValue('add_database_tab_' + String(internalId), 'form_database', setActiveView)}>
+          <button className="primary_button" onClick={proceedAddDatabase}>
             Proceed
           </button>
         </div>
