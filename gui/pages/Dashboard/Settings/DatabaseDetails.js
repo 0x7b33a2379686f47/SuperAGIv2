@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import agentStyles from "@/pages/Content/Agents/Agents.module.css";
-import {convertToTitleCase, returnDatabaseIcon, setLocalStorageArray} from "@/utils/utils";
+import {convertToTitleCase, removeTab, returnDatabaseIcon, setLocalStorageArray} from "@/utils/utils";
 import knowledgeStyles from "@/pages/Content/Knowledge/Knowledge.module.css";
 import styles from "@/pages/Content/Marketplace/Market.module.css";
 import Image from "next/image";
@@ -65,6 +65,7 @@ export default function DatabaseDetails({internalId, databaseId}) {
     deleteVectorDB(databaseId)
       .then((response) => {
         toast.success("Database deleted successfully", {autoClose: 1800});
+        removeTab(databaseId, databaseDetails?.name, "Database")
       })
       .catch((error) => {
         toast.error("Unable to delete database", {autoClose: 1800});

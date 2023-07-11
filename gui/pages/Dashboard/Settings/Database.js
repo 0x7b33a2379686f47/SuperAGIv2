@@ -20,8 +20,8 @@ export default function Database({sendDatabaseData}) {
     e.stopPropagation();
   };
 
-  useEffect(() => {
-    loadingTextEffect('Loading Databases', setLoadingText, 500);
+  function fetchDatabases() {
+    setIsLoading(true);
 
     getVectorDatabases()
       .then((response) => {
@@ -32,6 +32,11 @@ export default function Database({sendDatabaseData}) {
       .catch((error) => {
         console.error('Error fetching vector databases:', error);
       });
+  }
+
+  useEffect(() => {
+    loadingTextEffect('Loading Databases', setLoadingText, 500);
+    fetchDatabases();
   }, []);
 
   useEffect(() => {
@@ -58,6 +63,7 @@ export default function Database({sendDatabaseData}) {
     deleteVectorDB(databaseId)
       .then((response) => {
         toast.success("Database deleted successfully", {autoClose: 1800});
+        fetchDatabases();
       })
       .catch((error) => {
         toast.error("Unable to delete database", {autoClose: 1800});
