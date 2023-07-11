@@ -80,7 +80,7 @@ export default function Database({sendDatabaseData}) {
           <div className={styles.rowContainer} style={{maxHeight: '78vh',overflowY: 'auto'}}>
             {!isLoading ? <div>
               {vectorDB && vectorDB.length > 0 ? <div className={knowledgeStyles.database_wrapper}>
-                {vectorDB.map((item, index) => (<div key={index} className={knowledgeStyles.database_container}>
+                {vectorDB.map((item, index) => (<div key={index} className={knowledgeStyles.database_container} onClick={() => sendDatabaseData({id: item.id, name: item.name, contentType: "Database", internalId: createInternalId()})}>
                   <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                     <div style={{display:'flex',order:'0'}}>
                       <div className={styles.text_block}>{item.name}</div>

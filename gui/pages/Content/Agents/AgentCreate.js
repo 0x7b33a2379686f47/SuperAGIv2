@@ -778,12 +778,12 @@ export default function AgentCreate({sendAgentData, knowledge, selectedProjectId
                     {selectedKnowledge || 'Select knowledge'}<Image width={20} height={21} src={!knowledgeDropdown ? '/images/dropdown_down.svg' : '/images/dropdown_up.svg'} alt="expand-icon"/>
                   </div>
                   <div>
-                    {knowledgeDropdown && knowledge.length > 0 && <div className="custom_select_options" ref={knowledgeRef} style={{width:'100%'}}>
+                    {knowledgeDropdown && knowledge && knowledge.length > 0 && <div className="custom_select_options" ref={knowledgeRef} style={{width:'100%'}}>
                       {knowledge.map((item, index) => (<div key={index} className="custom_select_option" onClick={() => handleKnowledgeSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
                         {item.name}
                       </div>))}
                     </div>}
-                    {knowledgeDropdown && knowledge.length <= 0 && <div className="custom_select_options" ref={knowledgeRef} style={{width:'100%'}}>
+                    {knowledgeDropdown && knowledge && knowledge.length <= 0 && <div className="custom_select_options" ref={knowledgeRef} style={{width:'100%'}}>
                       <div className="custom_no_select_option" style={{padding:'12px 14px',maxWidth:'100%'}}>
                         No knowledge found
                       </div>
