@@ -18,8 +18,8 @@ export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, s
       .then((response) => {
         const data = response.data || [];
         if(data) {
-          setPineconeIndices(data.pinecone);
-          setQdrantIndices(data.qdrant);
+          setPineconeIndices(data.pinecone || []);
+          setQdrantIndices(data.qdrant || []);
         }
       })
       .catch((error) => {
@@ -144,24 +144,24 @@ export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, s
       <div style={{marginTop: '15px'}}>
         <label className={styles.form_label}>Collection i.e, Index</label><br/>
         <div className="dropdown_container_search" style={{width:'100%'}}>
-          <div className="custom_select_container" onClick={() => setIndexDropdown(!indexDropdown)} style={{width:'100%'}}>
-            {selectedIndex.name}<Image width={20} height={21} src={!indexDropdown ? '/images/dropdown_down.svg' : '/images/dropdown_up.svg'} alt="expand-icon"/>
+          <div className="custom_select_container" onClick={() => setIndexDropdown(!indexDropdown)} style={{width:'100%',color: !selectedIndex ? '#888888' : ''}}>
+            {selectedIndex?.name || 'Select Index'}<Image width={20} height={21} src={!indexDropdown ? '/images/dropdown_down.svg' : '/images/dropdown_up.svg'} alt="expand-icon"/>
           </div>
           <div>
             {indexDropdown && <div className="custom_select_options" ref={indexRef} style={{width:'100%'}}>
               <div className={styles1.knowledge_label} style={{padding:'12px 14px',maxWidth:'100%'}}>Select an existing vector database collection/index to install the knowledge</div>
-              <div className={styles1.knowledge_db} style={{maxWidth:'100%'}}>
+              {pinconeIndices && pinconeIndices.length > 0 && <div className={styles1.knowledge_db} style={{maxWidth:'100%'}}>
                 <div className={styles1.knowledge_db_name}>Pinecone</div>
-                {pinconeIndices?.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleIndexSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                {pinconeIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleIndexSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
                   {index.name}
                 </div>))}
-              </div>
-              <div className={styles1.knowledge_db} style={{maxWidth:'100%'}}>
+              </div>}
+              {qdrantIndices && qdrantIndices.length > 0 && <div className={styles1.knowledge_db} style={{maxWidth:'100%'}}>
                 <div className={styles1.knowledge_db_name}>Qdrant</div>
-                {qdrantIndices?.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleIndexSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                {qdrantIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleIndexSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
                   {index.name}
                 </div>))}
-              </div>
+              </div>}
             </div>}
           </div>
         </div>

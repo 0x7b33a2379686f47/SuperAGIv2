@@ -25,8 +25,8 @@ export default function KnowledgeTemplate({template, env}) {
       .then((response) => {
         const data = response.data || [];
         if(data) {
-          setPineconeIndices(data.pinecone);
-          setQdrantIndices(data.qdrant);
+          setPineconeIndices(data.pinecone || []);
+          setQdrantIndices(data.qdrant || []);
         }
       })
       .catch((error) => {
@@ -93,18 +93,18 @@ export default function KnowledgeTemplate({template, env}) {
                 <div>
                   {indexDropdown && <div className="custom_select_options" ref={indexRef} style={{width:'100%',maxHeight:'500px'}}>
                     <div className={styles3.knowledge_label} style={{padding:'12px 14px',maxWidth:'100%'}}>Select an existing vector database collection/index to install the knowledge</div>
-                    <div className={styles3.knowledge_db} style={{maxWidth:'100%'}}>
+                    {pinconeIndices && pinconeIndices.length > 0 && <div className={styles3.knowledge_db} style={{maxWidth:'100%'}}>
                       <div className={styles3.knowledge_db_name}>Pinecone</div>
-                      {pinconeIndices?.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleInstallClick(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                      {pinconeIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleInstallClick(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
                         {index.name}
                       </div>))}
-                    </div>
-                    <div className={styles3.knowledge_db} style={{maxWidth:'100%'}}>
+                    </div>}
+                    {qdrantIndices && qdrantIndices.length > 0 && <div className={styles3.knowledge_db} style={{maxWidth:'100%'}}>
                       <div className={styles3.knowledge_db_name}>Qdrant</div>
-                      {qdrantIndices?.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleInstallClick(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                      {qdrantIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleInstallClick(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
                         {index.name}
                       </div>))}
-                    </div>
+                    </div>}
                   </div>}
                 </div>
               </div>}

@@ -3,7 +3,7 @@ import openai
 from qdrant_client import models, QdrantClient
 import chromadb
 from chromadb.config import Settings
-from sentence_transformers import SentenceTransformer
+# from sentence_transformers import SentenceTransformer
 from superagi.config.config import get_config
 
 
