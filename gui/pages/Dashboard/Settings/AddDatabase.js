@@ -212,9 +212,9 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
             <div key={index} style={item.name === selectedDB ? {border:'1px solid #9B9AA1'} : {border:'1px solid rgb(39, 35, 53)'}} className={knowledgeStyles.database_container}
                  onClick={() => setLocalStorageValue('selected_db_' + String(internalId), item.name, setSelectedDB)}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'center',margin:'20px'}}>
-                <Image width={40} height={40} src={returnDatabaseIcon(item.name)} alt=""/>
+                <Image width={40} height={40} src={returnDatabaseIcon(convertToTitleCase(item.name))} alt=""/>
               </div>
-              <div className={styles.text_block} style={{width:'100%',marginBottom:'10px',textAlign:'center'}}>{item.name}</div>
+              <div className={styles.text_block} style={{width:'100%',marginBottom:'10px',textAlign:'center'}}>{convertToTitleCase(item.name)}</div>
             </div>))}
         </div>
         <div style={{display: 'flex', justifyContent: 'flex-end',marginTop:'15px'}}>

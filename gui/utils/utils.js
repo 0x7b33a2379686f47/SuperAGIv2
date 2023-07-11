@@ -358,6 +358,10 @@ export const returnDatabaseIcon = (database) => {
 };
 
 export const convertToTitleCase = (str) => {
+  if(str === null || str === '') {
+    return '';
+  }
+
   const words = str.toLowerCase().split('_');
   const capitalizedWords = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
   return capitalizedWords.join(' ');
