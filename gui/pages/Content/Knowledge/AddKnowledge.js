@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import KnowledgeForm from "@/pages/Content/Knowledge/KnowledgeForm";
 
-export default function AddKnowledge({internalId}) {
+export default function AddKnowledge({internalId, sendKnowledgeData}) {
   const [knowledgeName, setKnowledgeName] = useState('');
   const [knowledgeDescription, setKnowledgeDescription] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -37,6 +37,7 @@ export default function AddKnowledge({internalId}) {
                        setSelectedIndex={setSelectedIndex}
                        isEditing={false}
                        setIsEditing={null}
+                       sendKnowledgeData={sendKnowledgeData}
         />
       </div>
       <div className="col-3"></div>

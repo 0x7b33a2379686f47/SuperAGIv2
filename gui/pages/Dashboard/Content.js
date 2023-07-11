@@ -200,12 +200,14 @@ export default function Content({env, selectedView, selectedProjectId, organisat
 
     EventBus.on('openNewTab', openNewTab);
     EventBus.on('reFetchAgents', fetchAgents);
+    EventBus.on('reFetchKnowledge', fetchKnowledge);
     EventBus.on('removeTab', removeTab);
     EventBus.on('openToolkitTab', openToolkitTab);
 
     return () => {
       EventBus.off('openNewTab', openNewTab);
       EventBus.off('reFetchAgents', fetchAgents);
+      EventBus.off('reFetchKnowledge', fetchKnowledge);
       EventBus.off('removeTab', removeTab);
     };
   });
@@ -307,7 +309,7 @@ export default function Content({env, selectedView, selectedProjectId, organisat
                   {tab.contentType === 'Settings' && <Settings organisationId={organisationId} sendDatabaseData={addTab}/>}
                   {tab.contentType === 'Marketplace' && <Market env={env} selectedView={selectedView}/>}
                   {tab.contentType === 'Add_Toolkit' && <AddTool internalId={tab.internalId || index}/>}
-                  {tab.contentType === 'Add_Knowledge' && <AddKnowledge internalId={tab.internalId || index}/>}
+                  {tab.contentType === 'Add_Knowledge' && <AddKnowledge internalId={tab.internalId || index} sendKnowledgeData={addTab}/>}
                   {tab.contentType === 'Add_Database' && <AddDatabase internalId={tab.internalId || index} sendDatabaseDetailsData={addTab}/>}
                   {tab.contentType === 'Create_Agent' && <AgentTemplatesList knowledge={knowledge} internalId={tab.internalId || index} organisationId={organisationId} sendAgentData={addTab} selectedProjectId={selectedProjectId} fetchAgents={fetchAgents} toolkits={toolkits}/>}
                 </div>}

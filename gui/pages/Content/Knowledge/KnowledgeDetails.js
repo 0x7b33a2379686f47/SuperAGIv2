@@ -5,6 +5,8 @@ import styles from "@/pages/Content/Toolkits/Tool.module.css";
 import Image from "next/image";
 import KnowledgeForm from "@/pages/Content/Knowledge/KnowledgeForm";
 import {deleteKnowledge, getKnowledgeDetails} from "@/pages/api/DashboardService";
+import { removeTab } from "@/utils/utils";
+import {EventBus} from "@/utils/eventBus";
 
 export default function KnowledgeDetails({internalId, knowledgeId}) {
   const [showDescription,setShowDescription] = useState(false);
@@ -29,6 +31,8 @@ export default function KnowledgeDetails({internalId, knowledgeId}) {
     deleteKnowledge(knowledgeId)
       .then((response) => {
         toast.success("Knowledge deleted successfully", {autoClose: 1800});
+        removeTab(knowledgeId, knowledgeName, "Knowledge");
+        EventBus.emit('reFetchKnowledge', {});
       })
       .catch((error) => {
         toast.error("Unable to delete knowledge", {autoClose: 1800});
@@ -84,6 +88,7 @@ export default function KnowledgeDetails({internalId, knowledgeId}) {
                        setSelectedIndex={setVectorDBIndex}
                        isEditing={true}
                        setIsEditing={setIsEditing}
+                       sendKnowledgeData={null}
         /> :
         <div>
           <div className={styles.tools_container}>

@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useRef} from 'react';
 import styles1 from '@/pages/Content/Knowledge/Knowledge.module.css'
-import {removeTab, setLocalStorageValue, setLocalStorageArray} from "@/utils/utils";
+import {removeTab, setLocalStorageValue, setLocalStorageArray, createInternalId} from "@/utils/utils";
 import styles from "@/pages/Content/Agents/Agents.module.css";
 import Image from "next/image";
 import {ToastContainer, toast} from "react-toastify";
 import {addUpdateKnowledge, getValidIndices} from "@/pages/api/DashboardService";
+import {EventBus} from "@/utils/eventBus";
 
-export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, setKnowledgeName, knowledgeDescription, setKnowledgeDescription, selectedIndex, setSelectedIndex, isEditing, setIsEditing}) {
+export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, setKnowledgeName, knowledgeDescription, setKnowledgeDescription, selectedIndex, setSelectedIndex, isEditing, setIsEditing, sendKnowledgeData}) {
   const [addClickable, setAddClickable] = useState(true);
   const indexRef = useRef(null);
   const [indexDropdown, setIndexDropdown] = useState(false);
@@ -79,6 +80,8 @@ export default function KnowledgeForm({internalId, knowledgeId, knowledgeName, s
     addUpdateKnowledge(knowledgeData)
       .then((response) => {
         toast.success("Knowledge added successfully", {autoClose: 1800});
+        sendKnowledgeData({id: response.data.id, name: knowledgeName, contentType: "Knowledge", internalId: createInternalId()});
+        EventBus.emit('reFetchKnowledge', {});
       })
       .catch((error) => {
         toast.error("Unable to add knowledge", {autoClose: 1800});
