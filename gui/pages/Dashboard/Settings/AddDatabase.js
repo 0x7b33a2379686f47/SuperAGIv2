@@ -19,7 +19,7 @@ import {connectPinecone, connectQdrant, fetchVectorDBList} from "@/pages/api/Das
 export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
   const [activeView, setActiveView] = useState('select_database');
   const [vectorDatabases, setVectorDatabases] = useState(null);
-  const [selectedDB, setSelectedDB] = useState(null);
+  const [selectedDB, setSelectedDB] = useState('');
   const [databaseName, setDatabaseName] = useState('database name');
   const [collections, setCollections] = useState(['collection name']);
 
@@ -73,7 +73,7 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
         const data = response.data || [];
         setVectorDatabases(data);
         const selected_db = localStorage.getItem('selected_db_' +  String(internalId));
-        setSelectedDB(selected_db ? selected_db : convertToTitleCase(data[0].name) || null);
+        setSelectedDB(selected_db ? selected_db : convertToTitleCase(data[0].name) || '');
       })
       .catch((error) => {
         console.error('Error fetching vector databases:', error);
