@@ -23,8 +23,10 @@ export default function DatabaseDetails({internalId, databaseId}) {
           const data = response.data || [];
           setDatabaseDetails(data);
           if(data) {
-            setCollections(data.indices);
-            setInitialCollections(data.indices);
+            const localIndices = localStorage.getItem("db_details_collections_" + String(internalId));
+            const indices = data.indices || [];
+            setCollections(localIndices ? JSON.parse(localIndices) : indices);
+            setInitialCollections(indices);
           }
         })
         .catch((error) => {

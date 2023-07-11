@@ -170,7 +170,7 @@ export default function AddDatabase({internalId, sendDatabaseDetailsData}) {
         return;
       }
 
-      if(qdrantPort.replace(/\s/g, '') === '') {
+      if(String(qdrantPort).replace(/\s/g, '') === '') {
         toast.error("Qdrant port can't be blank", {autoClose: 1800});
         return;
       }
