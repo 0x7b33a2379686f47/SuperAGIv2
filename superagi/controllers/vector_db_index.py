@@ -16,7 +16,7 @@ def get_marketplace_valid_indices(knowledge_id: int, organisation = Depends(get_
     pinecone = []
     qdrant = []
     for vector in vector_dbs:
-        indices = VectorIndexCollection.get_vector_index_organisation(db.session, vector.id)
+        indices = VectorIndexCollection.get_vector_index_organisation(db.session, vector["id"])
         for index in indices:
             data = {
                 "id": index.id,
@@ -34,7 +34,6 @@ def get_marketplace_valid_indices(knowledge_id: int, organisation = Depends(get_
         "pinecone": pinecone,
         "qdrant": qdrant
     }
-    
     return vector_indices_data
 
 @router.get("/get/user/valid_indices")
@@ -43,7 +42,7 @@ def get_user_valid_indices(organisation = Depends(get_user_organisation)):
     pinecone = []
     qdrant = []
     for vector in vector_dbs:
-        indices = Vectordb.get_vector_db_organisation(db.session, vector.id)
+        indices = Vectordb.get_vector_db_organisation(db.session, vector["id"])
         for index in indices:
             data = {
                 "id": index.id,

@@ -13,8 +13,7 @@ from superagi.helper.auth import get_user_organisation
 router = APIRouter()
 
 @router.get("/get/list")
-def handle_marketplace_operations_list(
-        page: int):
+def handle_marketplace_operations_list():
     """
     Handle marketplace operation list.
 
@@ -25,28 +24,30 @@ def handle_marketplace_operations_list(
         dict: The response containing the marketplace list.
 
     """
-    marketplace_organisation_id = int(get_config("MARKEPLACE_ORGANISATION_ID"))
+    marketplace_organisation_id = int(get_config("MARKETPLACE_ORGANISATION_ID"))
     marketplace_vector_dbs = Vectordb.fetch_marketplace_list(db.session, marketplace_organisation_id)
     #marketplace_vector_dbs_with_install = Vectordb.get_vector_db_installed_details(db.session, marketplace_vector_dbs,
     #                                                                          organisation)
+    print(marketplace_vector_dbs)
     return marketplace_vector_dbs
 
 
 @router.post("/connect/pinecone")
 def connect_pinecone_vector_db(data: dict, organisation = Depends(get_user_organisation)):
-    pinecone_db = Vectordb.add_database(db.session, data["name"], "PINECONE", organisation)
     pinecone_keys = ["API_KEY", "ENVIRONMENT"]
+    for collection in data["collections"]:
+        index_dimensions = PineconeHelper(db.session).get_dimensions(data["api_key"], data["environment"], collection)
+        index_state = PineconeHelper(db.session).get_pinecone_index_state(data["api_key"], data["environment"], collection)
+        if not index_dimensions["success"] or not index_state:
+            return {"success": False}
+    pinecone_db = Vectordb.add_database(db.session, data["name"], "PINECONE", organisation)
     for key in pinecone_keys:
         VectordbConfig.add_database_config(db.session, pinecone_db.id, key, data[key.lower()])
     for collection in data["collections"]:
         vector_index = VectorIndexCollection.add_vector_index(db.session, collection, pinecone_db.id)
-        index_dimensions = PineconeHelper(db.session).get_dimensions(pinecone_db, vector_index)
-        index_state = PineconeHelper(db.session).get_pinecone_index_state(pinecone_db, vector_index)
-        if not index_dimensions["status"] or not index_state:
-            return {"success": False}
         key_data = {
-            "DIMENSIONS": index_dimensions,
-            "INDEX_STATE": index_state
+            "DIMENSIONS": index_dimensions["dimensions"],
+            "INDEX_STATE": index_state["state"]
         }
         for key in key_data.keys():
            VectorIndexConfig.add_vector_index_config(db.session, vector_index.id, key, key_data[key]) 
@@ -54,22 +55,23 @@ def connect_pinecone_vector_db(data: dict, organisation = Depends(get_user_organ
 
 @router.post("/connect/qdrant")
 def connect_qdrant_vector_db(data: dict, organisation = Depends(get_user_organisation)):
-    qdrant_db = Vectordb.add_database(db.session, data["name"], "QDRANT", organisation)
     qdrant_keys = ["API_KEY", "URL", "PORT"]
+    for collection in data["collections"]:
+        index_dimensions = QdrantHelper(db.session).get_dimensions(data["api_key"], data["url"], data["port"], collection)
+        index_state = QdrantHelper(db.session).get_qdrant_index_state(data["api_key"], data["url"], data["port"], collection)
+        if not index_dimensions["success"] or not index_state:
+            return {"success": False}
+    qdrant_db = Vectordb.add_database(db.session, data["name"], "QDRANT", organisation)
     for key in qdrant_keys:
-        qdrant_config = VectordbConfig.add_database_config(db.session, qdrant_db.id, key, data[key.lower()])
+        VectordbConfig.add_database_config(db.session, qdrant_db.id, key, data[key.lower()])
     for collection in data["collections"]:
         vector_index = VectorIndexCollection.add_vector_index(db.session, collection, qdrant_db.id)
-        index_dimensions = QdrantHelper(db.session).get_dimensions(qdrant_db, vector_index)
-        index_state = QdrantHelper(db.session).get_qdrant_index_state(qdrant_db, vector_index)
-        if not index_dimensions["status"] or not index_state:
-            return {"success": False}
         key_data = {
             "DIMENSIONS": index_dimensions["dimensions"],
             "INDEX_STATE": index_state["state"]
         }
         for key in key_data.keys():
-           VectorIndexConfig.add_vector_index_config(db.session, vector_index.id, key, key_data[key]) 
+           VectorIndexConfig.add_vector_index_config(db.session, vector_index.id, key, key_data[key])
     
     return {"success": True, "id": qdrant_db.id, "name": qdrant_db.name}
 
@@ -94,7 +96,7 @@ def update_vector_indices(new_indices: list, vector_db_id: int):
             elif vector_db.db_type == "QDRANT":
                 index_dimensions = QdrantHelper(db.session).get_dimensions(vector_db, vector_index)
                 index_state = QdrantHelper(db.session).get_qdrant_index_state(vector_db, vector_index)
-            if not index_dimensions["status"] or not index_state:
+            if not index_dimensions["success"] or not index_state:
                 return {"success": False}
             key_data = {
                 "DIMENSIONS": index_dimensions["dimensions"],
@@ -114,7 +116,7 @@ def get_vector_db_details(vector_db_id: int):
         "db_type": vector_db.db_type
     }
     for config in vector_db_config:
-        vector_data[config.key.lower()] = config.data
+        vector_data[config.key.lower()] = config.value
     indices = db.session.query(VectorIndexCollection).filter(VectorIndexCollection.vector_db_id == vector_db.id).all()
     vector_indices = []
     for index in indices:
@@ -126,8 +128,8 @@ def get_vector_db_details(vector_db_id: int):
 def delete_vector_db(vector_db_id: int):
     vector_indices = VectorIndexCollection.get_vector_index_organisation(db.session, vector_db_id)
     for index in vector_indices:
-        VectorIndexConfig.delete_vector_index_config(db.session, vector_index_id=index.id)
-        VectorIndexCollection.delete_vector_index(db.session, id=index.id)
-    VectordbConfig.delete_vector_db_config(db.session, vector_db_id=vector_db_id)
-    Vectordb.delete_vector_db(db.session, vector_db_id=vector_db_id)
+        VectorIndexConfig.delete_vector_index_config(session=db.session, vector_index_id=index.id)
+        VectorIndexCollection.delete_vector_index(session=db.session, id=index.id)
+    VectordbConfig.delete_vector_db_config(session=db.session, vector_db_id=vector_db_id)
+    Vectordb.delete_vector_db(session=db.session, vector_db_id=vector_db_id)
 
