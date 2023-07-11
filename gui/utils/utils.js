@@ -327,6 +327,7 @@ export const returnToolkitIcon = (toolkitName) => {
     { name: 'File Toolkit', imageSrc: '/images/filemanager_icon.svg' },
     { name: 'CodingToolkit', imageSrc: '/images/app-logo-light.png' },
     { name: 'Image Generation Toolkit', imageSrc: '/images/app-logo-light.png' },
+    { name: 'Knowledge Search Toolkit', imageSrc: '/images/app-logo-light.png' },
   ];
 
   const toolkit = toolkitData.find((tool) => tool.name === toolkitName);
