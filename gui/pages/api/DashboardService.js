@@ -211,3 +211,11 @@ export const getValidIndices = () => {
 export const getValidMarketplaceIndices = (knowledgeId) => {
   return api.get(`/vector_db_index/get/marketplace/valid_indices/${knowledgeId}`);
 }
+
+export const fetchKnowledgeTemplateOverview = (knowledgeId) => {
+  return api.get(`/knowledge/marketplace/get/details/${knowledgeId}`);
+}
+
+export const installKnowledgeTemplate = (knowledgeId, indexId) => {
+  return api.get(`/knowledge/install/${knowledgeId}/index/${indexId}`);
+}

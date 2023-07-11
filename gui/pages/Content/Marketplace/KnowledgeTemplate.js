@@ -9,11 +9,16 @@ import styles3 from "../Knowledge/Knowledge.module.css"
 import {EventBus} from "@/utils/eventBus";
 import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
-import {getValidMarketplaceIndices} from "@/pages/api/DashboardService";
+import {
+  fetchKnowledgeTemplateOverview,
+  getValidMarketplaceIndices,
+  installKnowledgeTemplate
+} from "@/pages/api/DashboardService";
 
 export default function KnowledgeTemplate({template, env}) {
   const [installed, setInstalled] = useState('');
   const [dropdown,setDropdown] = useState(false);
+  const [templateData,setTemplateData] = useState([]);
   const [markdownContent, setMarkdownContent] = useState('');
   const indexRef = useRef(null);
   const [indexDropdown, setIndexDropdown] = useState(false);
@@ -55,12 +60,46 @@ export default function KnowledgeTemplate({template, env}) {
     if (window.location.href.toLowerCase().includes('marketplace')) {
       setInstalled('Sign in to install');
     } else {
-      
+      fetchKnowledgeTemplateOverview(template.id)
+        .then((response) => {
+          const data = response.data || [];
+          setTemplateData(data);
+          if(data) {
+            setMarkdownContent(data.readme);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching template details:', error);
+        });
     }
   }, []);
 
-  const handleInstallClick = (index) => {
+  const handleInstallClick = (indexId) => {
+    if (window.location.href.toLowerCase().includes('marketplace')) {
+      localStorage.setItem('knowledge_to_install', template.id);
+      localStorage.setItem('knowledge_index_to_install', indexId);
 
+      if (env === 'PROD') {
+        window.open(`https://app.superagi.com/`, '_self');
+      } else {
+        window.location.href = '/';
+      }
+      return;
+    }
+
+    if (template && template.is_installed) {
+      toast.error("Template is already installed", {autoClose: 1800});
+      return;
+    }
+
+    installKnowledgeTemplate(template.id, indexId)
+      .then((response) => {
+        toast.success("Template installed", {autoClose: 1800});
+        setInstalled('Installed');
+      })
+      .catch((error) => {
+        console.error('Error installing template:', error);
+      });
   }
 
   function handleBackClick() {
@@ -82,8 +121,8 @@ export default function KnowledgeTemplate({template, env}) {
           </div>
           <div className="col-3" style={{maxHeight: '84vh', overflowY: 'auto', padding: '0'}}>
             <div className={styles2.left_container}>
-              <span className={styles2.top_heading}>{template?.name}</span>
-              <span style={{fontSize: '12px',marginTop: '15px',}} className={styles.tool_publisher}>by {template?.contributor}</span>
+              <span className={styles2.top_heading}>{templateData?.name}</span>
+              <span style={{fontSize: '12px',marginTop: '15px',}} className={styles.tool_publisher}>by {templateData?.contributed_by}</span>
 
               {!template?.is_installed && <div className="dropdown_container_search" style={{width:'100%'}}>
                 <div className="primary_button" onClick={() => setIndexDropdown(!indexDropdown)}
@@ -95,13 +134,13 @@ export default function KnowledgeTemplate({template, env}) {
                     <div className={styles3.knowledge_label} style={{padding:'12px 14px',maxWidth:'100%'}}>Select an existing vector database collection/index to install the knowledge</div>
                     {pinconeIndices && pinconeIndices.length > 0 && <div className={styles3.knowledge_db} style={{maxWidth:'100%'}}>
                       <div className={styles3.knowledge_db_name}>Pinecone</div>
-                      {pinconeIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleInstallClick(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                      {pinconeIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleInstallClick(index.id)} style={{padding:'12px 14px',maxWidth:'100%'}}>
                         {index.name}
                       </div>))}
                     </div>}
                     {qdrantIndices && qdrantIndices.length > 0 && <div className={styles3.knowledge_db} style={{maxWidth:'100%'}}>
                       <div className={styles3.knowledge_db_name}>Qdrant</div>
-                      {qdrantIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleInstallClick(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
+                      {qdrantIndices.map((index) => (<div key={index.id} className="custom_select_option" onClick={() => handleInstallClick(index.id)} style={{padding:'12px 14px',maxWidth:'100%'}}>
                         {index.name}
                       </div>))}
                     </div>}
@@ -127,49 +166,49 @@ export default function KnowledgeTemplate({template, env}) {
 
               <hr className={styles2.horizontal_line} />
 
-              <span className={styles2.description_text}>{template?.description}</span>
+              <span className={styles2.description_text}>{templateData?.description}</span>
 
               <hr className={styles2.horizontal_line} />
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Model(s)</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{template?.model}</div>
+                <div className={styles1.tool_text}>{templateData?.model}</div>
               </div><br />
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Knowledge datatype</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{template?.knowledge_datatype}</div>
+                <div className={styles1.tool_text}>{templateData?.knowledge_datatype}</div>
               </div><br />
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Tokenizer</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{template?.tokenizer}</div>
+                <div className={styles1.tool_text}>{templateData?.tokenizer}</div>
               </div><br />
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Chunk size</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{template?.chunk_size}</div>
+                <div className={styles1.tool_text}>{templateData?.chunk_size}</div>
               </div><br />
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Chunk overlap</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{template?.chunk_overlap}</div>
+                <div className={styles1.tool_text}>{templateData?.chunk_overlap}</div>
               </div><br />
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Text splitter</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{template?.text_splitters}</div>
+                <div className={styles1.tool_text}>{templateData?.text_splitters}</div>
               </div><br />
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Dimensions</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{template?.dimension}</div>
+                <div className={styles1.tool_text}>{templateData?.dimension}</div>
               </div>
 
               <hr className={styles2.horizontal_line} />
 
               <span style={{fontSize: '12px',}} className={styles.tool_publisher}>Last updated</span>
-              <span className={styles2.description_text}>{template?.updated_at}</span>
+              <span className={styles2.description_text}>{templateData?.updated_at}</span>
             </div>
           </div>
           <div className="col-9" style={{paddingLeft: '8px'}}>
