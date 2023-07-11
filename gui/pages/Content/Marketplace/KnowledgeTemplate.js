@@ -62,6 +62,7 @@ export default function KnowledgeTemplate({template, env}) {
     } else {
       fetchKnowledgeTemplateOverview(template.id)
         .then((response) => {
+          console.log(response.data);
           const data = response.data || [];
           setTemplateData(data);
           if(data) {
@@ -177,7 +178,7 @@ export default function KnowledgeTemplate({template, env}) {
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Knowledge datatype</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{templateData?.knowledge_datatype}</div>
+                <div className={styles1.tool_text}>{templateData?.data_type}</div>
               </div><br />
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Tokenizer</span>
@@ -197,12 +198,12 @@ export default function KnowledgeTemplate({template, env}) {
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Text splitter</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{templateData?.text_splitters}</div>
+                <div className={styles1.tool_text}>{templateData?.text_splitter}</div>
               </div><br />
 
               <span style={{fontSize: '12px'}} className={styles.tool_publisher}>Dimensions</span>
               <div className="tool_container" style={{marginTop:'10px',width: 'fit-content'}}>
-                <div className={styles1.tool_text}>{templateData?.dimension}</div>
+                <div className={styles1.tool_text}>{templateData?.dimensions}</div>
               </div>
 
               <hr className={styles2.horizontal_line} />
