@@ -28,7 +28,6 @@ def handle_marketplace_operations_list():
     marketplace_vector_dbs = Vectordb.fetch_marketplace_list(db.session, marketplace_organisation_id)
     #marketplace_vector_dbs_with_install = Vectordb.get_vector_db_installed_details(db.session, marketplace_vector_dbs,
     #                                                                          organisation)
-    print(marketplace_vector_dbs)
     return marketplace_vector_dbs
 
 
@@ -40,7 +39,7 @@ def connect_pinecone_vector_db(data: dict, organisation = Depends(get_user_organ
         index_state = PineconeHelper(db.session).get_pinecone_index_state(data["api_key"], data["environment"], collection)
         if not index_dimensions["success"] or not index_state:
             return {"success": False}
-    pinecone_db = Vectordb.add_database(db.session, data["name"], "PINECONE", organisation)
+    pinecone_db = Vectordb.add_database(db.session, data["name"], "Pinecone", organisation)
     for key in pinecone_keys:
         VectordbConfig.add_database_config(db.session, pinecone_db.id, key, data[key.lower()])
     for collection in data["collections"]:
@@ -61,7 +60,7 @@ def connect_qdrant_vector_db(data: dict, organisation = Depends(get_user_organis
         index_state = QdrantHelper(db.session).get_qdrant_index_state(data["api_key"], data["url"], data["port"], collection)
         if not index_dimensions["success"] or not index_state:
             return {"success": False}
-    qdrant_db = Vectordb.add_database(db.session, data["name"], "QDRANT", organisation)
+    qdrant_db = Vectordb.add_database(db.session, data["name"], "Qdrant", organisation)
     for key in qdrant_keys:
         VectordbConfig.add_database_config(db.session, qdrant_db.id, key, data[key.lower()])
     for collection in data["collections"]:
@@ -90,10 +89,10 @@ def update_vector_indices(new_indices: list, vector_db_id: int):
             VectorIndexCollection.delete_vector_index(db.session, id=index.id)
         else:
             vector_index = VectorIndexCollection.add_vector_index(db.session, existing_index, vector_db_id)
-            if vector_db.db_type == "PINECONE":
+            if vector_db.db_type == "Pinecone":
                 index_dimensions = PineconeHelper(db.session).get_dimensions(vector_db, vector_index)
                 index_state = PineconeHelper(db.session).get_pinecone_index_state(vector_db, vector_index)
-            elif vector_db.db_type == "QDRANT":
+            elif vector_db.db_type == "Qdrant":
                 index_dimensions = QdrantHelper(db.session).get_dimensions(vector_db, vector_index)
                 index_state = QdrantHelper(db.session).get_qdrant_index_state(vector_db, vector_index)
             if not index_dimensions["success"] or not index_state:
