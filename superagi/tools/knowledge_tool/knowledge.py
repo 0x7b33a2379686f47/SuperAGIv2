@@ -7,7 +7,7 @@ from typing import Type, List
 from pydantic import BaseModel, Field
 
 from superagi.helper.knowledge_tool import KnowledgeToolHelper
-from superagi.helper.knowledge_db_helper import KnowledgeToolDbHelper
+from superagi.helper.knowledge_tool_db_helper import KnowledgeToolDbHelper
 from superagi.models.agent_config import AgentConfiguration
 from superagi.models.knowledge import Knowledge
 from superagi.tools.base_tool import BaseTool
@@ -40,15 +40,19 @@ class KnowledgeSearchTool(BaseTool):
             AgentConfiguration.key == "knowledge").first()
         knowledge = session.query(Knowledge).filter(Knowledge.id == knowledge_id).first()
         dbhelper = KnowledgeToolDbHelper(session)
+        query_knowledge = KnowledgeToolHelper()
         knowledge_details=dbhelper.get_knowledge_details(knowledge)
-
+        print("///////////////////////////////////")
+        print(knowledge_details)
         if knowledge_details["knowledge_vector_db_type"] == "Pinecone":
             vector_db_creds = dbhelper.get_pinecone_creds(knowledge_details["knowledge_vector_db_id"])
-            req_context = query_knowledge.pinecone_get_match_vectors(query,vector_db_creds,knowledge_details)
+            # req_context = query_knowledge.pinecone_get_match_vectors(query,vector_db_creds,knowledge_details)
         elif knowledge_details["knowledge_vector_db_type"] == "Qdrant":
             vector_db_creds = dbhelper.get_qdrant_creds(knowledge_details["knowledge_vector_db_id"])
-            req_context = query_knowledge.pinecone_get_match_vectors(query,vector_db_creds,knowledge_details)
-        return req_context
+            # req_context = query_knowledge.pinecone_get_match_vectors(query,vector_db_creds,knowledge_details)
+        # return req_context
+        print("///////////////////////////////////")
+        print(vector_db_creds)
 
 
 
