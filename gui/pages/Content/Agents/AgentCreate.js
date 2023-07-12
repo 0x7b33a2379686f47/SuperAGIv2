@@ -15,11 +15,13 @@ import {
   openNewTab,
   removeTab,
   setLocalStorageValue,
-  setLocalStorageArray, returnResourceIcon,
+  setLocalStorageArray, returnResourceIcon, createInternalId,
 } from "@/utils/utils";
 import {EventBus} from "@/utils/eventBus";
+import styles1 from "@/pages/Content/Agents/Agents.module.css";
+import styles2 from "@/pages/Content/Knowledge/Knowledge.module.css";
 
-export default function AgentCreate({sendAgentData, knowledge, selectedProjectId, fetchAgents, toolkits, organisationId, template, internalId}) {
+export default function AgentCreate({sendAgentData, knowledge, selectedProjectId, fetchAgents, toolkits, organisationId, template, internalId, sendKnowledgeData}) {
   const [advancedOptions, setAdvancedOptions] = useState(false);
   const [agentName, setAgentName] = useState("");
   const [agentDescription, setAgentDescription] = useState("");
@@ -615,6 +617,11 @@ export default function AgentCreate({sendAgentData, knowledge, selectedProjectId
     }
   }, [internalId])
 
+  function openMarketplace() {
+    openNewTab(-4, "Marketplace", "Marketplace");
+    localStorage.setItem('marketplace_tab', 'market_knowledge');
+  }
+
   return (<>
     <div className="row">
       <div className="col-3"></div>
@@ -782,10 +789,35 @@ export default function AgentCreate({sendAgentData, knowledge, selectedProjectId
                       {knowledge.map((item, index) => (<div key={index} className="custom_select_option" onClick={() => handleKnowledgeSelect(index)} style={{padding:'12px 14px',maxWidth:'100%'}}>
                         {item.name}
                       </div>))}
+                      <div className={styles2.knowledge_db} style={{maxWidth:'100%',borderTop:'1px solid #3F3A4E'}}>
+                        <div className="custom_select_option" style={{padding:'12px 14px',maxWidth:'100%'}}
+                             onClick={() => sendKnowledgeData({ id: -6, name: "new knowledge", contentType: "Add_Knowledge", internalId: createInternalId() })}>
+                          <Image width={15} height={15} src="/images/plus_symbol.svg" alt="add-icon" />&nbsp;&nbsp;Add new knowledge
+                        </div>
+                      </div>
+                      <div className={styles2.knowledge_db} style={{maxWidth:'100%',borderTop:'1px solid #3F3A4E'}}>
+                        <div className="custom_select_option" style={{padding:'12px 14px',maxWidth:'100%'}}
+                             onClick={openMarketplace}>
+                          <Image width={15} height={15} src="/images/widgets.svg" alt="marketplace" />&nbsp;&nbsp;Browse knowledge from marketplace
+                        </div>
+                      </div>
                     </div>}
-                    {knowledgeDropdown && knowledge && knowledge.length <= 0 && <div className="custom_select_options" ref={knowledgeRef} style={{width:'100%'}}>
-                      <div className="custom_no_select_option" style={{padding:'12px 14px',maxWidth:'100%'}}>
-                        No knowledge found
+                    {knowledgeDropdown && knowledge && knowledge.length <= 0 && <div className="custom_select_options" ref={knowledgeRef} style={{width:'100%',maxHeight:'400px'}}>
+                      <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',marginTop:'30px',marginBottom:'20px',width:'100%'}}>
+                        <Image width={150} height={60} src="/images/no_permissions.svg" alt="no-permissions" />
+                        <span className={styles1.feed_title} style={{marginTop: '8px'}}>No knowledge found</span>
+                      </div>
+                      <div className={styles2.knowledge_db} style={{maxWidth:'100%',borderTop:'1px solid #3F3A4E'}}>
+                        <div className="custom_select_option" style={{padding:'12px 14px',maxWidth:'100%'}}
+                             onClick={() => sendKnowledgeData({ id: -6, name: "new knowledge", contentType: "Add_Knowledge", internalId: createInternalId() })}>
+                          <Image width={15} height={15} src="/images/plus_symbol.svg" alt="add-icon" />&nbsp;&nbsp;Add new knowledge
+                        </div>
+                      </div>
+                      <div className={styles2.knowledge_db} style={{maxWidth:'100%',borderTop:'1px solid #3F3A4E'}}>
+                        <div className="custom_select_option" style={{padding:'12px 14px',maxWidth:'100%'}}
+                        onClick={openMarketplace}>
+                          <Image width={15} height={15} src="/images/widgets.svg" alt="marketplace" />&nbsp;&nbsp;Browse knowledge from marketplace
+                        </div>
                       </div>
                     </div>}
                   </div>

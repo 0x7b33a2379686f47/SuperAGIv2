@@ -311,7 +311,8 @@ export default function Content({env, selectedView, selectedProjectId, organisat
                   {tab.contentType === 'Add_Toolkit' && <AddTool internalId={tab.internalId || index}/>}
                   {tab.contentType === 'Add_Knowledge' && <AddKnowledge internalId={tab.internalId || index} sendKnowledgeData={addTab}/>}
                   {tab.contentType === 'Add_Database' && <AddDatabase internalId={tab.internalId || index} sendDatabaseDetailsData={addTab}/>}
-                  {tab.contentType === 'Create_Agent' && <AgentTemplatesList knowledge={knowledge} internalId={tab.internalId || index} organisationId={organisationId} sendAgentData={addTab} selectedProjectId={selectedProjectId} fetchAgents={fetchAgents} toolkits={toolkits}/>}
+                  {tab.contentType === 'Create_Agent' && <AgentTemplatesList knowledge={knowledge} internalId={tab.internalId || index} organisationId={organisationId} sendKnowledgeData={addTab}
+                                                                             sendAgentData={addTab} selectedProjectId={selectedProjectId} fetchAgents={fetchAgents} toolkits={toolkits}/>}
                 </div>}
               </div>
             ))}
