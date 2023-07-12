@@ -38,6 +38,8 @@ class KnowledgeSearchTool(BaseTool):
         knowledge_id = session.query(AgentConfiguration).filter(
             AgentConfiguration.agent_id == self.agent_id,
             AgentConfiguration.key == "knowledge").first()
+        print("/////////////////")
+        print(knowledge_id)
         knowledge = session.query(Knowledge).filter(Knowledge.id == knowledge_id).first()
         dbhelper = KnowledgeToolDbHelper(session)
         query_knowledge = KnowledgeToolHelper()
