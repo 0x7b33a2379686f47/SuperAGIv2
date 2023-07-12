@@ -17,6 +17,15 @@ export default function MarketKnowledge() {
 
     if(window.location.href.toLowerCase().includes('marketplace')) {
       setShowMarketplace(true);
+      axios.get(`https://app.superagi.com/api/knowledge/get/list?page=0`)
+        .then((response) => {
+          const data = response.data || [];
+          setKnowledgeTemplates(data);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching knowledge templates:', error);
+        });
     } else {
       fetchKnowledgeTemplateList()
         .then((response) => {

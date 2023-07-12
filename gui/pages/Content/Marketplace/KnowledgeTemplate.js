@@ -59,10 +59,20 @@ export default function KnowledgeTemplate({template, env}) {
 
     if (window.location.href.toLowerCase().includes('marketplace')) {
       setInstalled('Sign in to install');
+      axios.get(`https://app.superagi.com/api/knowledge/marketplace/get/details/${template.id}`)
+        .then((response) => {
+          const data = response.data || [];
+          setTemplateData(data);
+          if(data) {
+            setMarkdownContent(data.readme);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching template details:', error);
+        });
     } else {
       fetchKnowledgeTemplateOverview(template.id)
         .then((response) => {
-          console.log(response.data);
           const data = response.data || [];
           setTemplateData(data);
           if(data) {
